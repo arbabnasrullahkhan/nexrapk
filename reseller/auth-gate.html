@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — RESELLER AUTH GATE (reseller/auth-gate.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  DUAL-PURPOSE: Agency Pitch Landing + Reseller Authentication Gate  │
+  │  Global UI shell elements fetched at runtime from /components/.     │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  AUTH FLOW:                                                          │
+  │  Step 0 → Not logged in        → Prompt login / redirect            │
+  │  Step 1 → Logged in, unverified→ Email verification wall            │
+  │  Step 2 → Verified             → Reseller Key input gate            │
+  │  Step 3 → Key validated        → Role elevated → Dashboard          │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+
+    <!-- ════════════════════ SEO & OG (B2B Marketing) ════════════════════ -->
+    <title>Become a Reseller Partner | Nexra Tech PK Agency Program</title>
+    <meta name="description" content="Join the Nexra Tech PK Reseller Network. Get wholesale pricing, custom branded storefronts, instant license distribution, and unlimited commission potential.">
+    <meta name="keywords" content="Nexra Tech Reseller, Agency Partner, Wholesale SaaS, B2B Pakistan, Reseller Program">
+    <meta name="author" content="Nexra Tech PK">
+    <link rel="canonical" href="https://nexratech.pk/reseller/auth-gate.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Become a Nexra Tech Partner — Exclusive Reseller Program">
+    <meta property="og:description" content="Build your own branded software store. Wholesale API pricing. Instant license distribution. Limited spots available.">
+    <meta property="og:url" content="https://nexratech.pk/reseller/auth-gate.html">
+    <meta property="og:image" content="https://nexratech.pk/assets/og-reseller.jpg">
+    <meta property="og:site_name" content="Nexra Tech PK">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nexra Tech Reseller Program — Build Your Agency">
+    <meta name="twitter:description" content="Exclusive invite-only reseller keys. Become an authorized Nexra Tech PK agency partner today.">
+    <meta name="twitter:image" content="https://nexratech.pk/assets/og-reseller.jpg">
+
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+
+    <!-- ════════════════════ PRECONNECT & FONTS ════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════════════════ STYLESHEETS ════════════════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/reseller-auth.css">
+
+    <!-- ════════════════════ FIREBASE ════════════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+
+    <!-- Anti-Scraping: No-select on auth inputs -->
+    <style>
+        .ra-key-input { -webkit-user-select: text; user-select: text; }
+        .ra-no-select { -webkit-user-select: none; user-select: none; }
+    </style>
+    <script>document.addEventListener('contextmenu', function(e) {
+        if (!e.target.closest('.ra-key-input')) e.preventDefault();
+    });</script>
+
+    <!-- Dynamic JSON-LD -->
+    <script type="application/ld+json" id="ra-json-ld">{}</script>
+</head>
+
+<body class="ra-no-select">
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SECTION 1: B2B HERO & VALUE PROPOSITION
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="ra-hero" id="ra-hero">
+        <!-- Parallax Canvas Watermark -->
+        <canvas id="ra-canvas" class="ra-canvas-watermark" aria-hidden="true"></canvas>
+
+        <!-- Floating particle elements -->
+        <div class="ra-particle ra-p1" aria-hidden="true"></div>
+        <div class="ra-particle ra-p2" aria-hidden="true"></div>
+        <div class="ra-particle ra-p3" aria-hidden="true"></div>
+
+        <div class="ra-hero-content">
+            <!-- Launch Badge -->
+            <div class="ra-launch-badge">
+                <span class="ra-badge-dot"></span>
+                <span>Invite-Only Program · Limited Spots</span>
+            </div>
+
+            <h1 class="tech-font ra-hero-title">
+                Build Your Own<br>
+                <span class="ra-gradient-text">Software Empire.</span>
+            </h1>
+            <p class="ra-hero-sub">
+                Join Pakistan's most powerful SaaS reseller ecosystem. Get wholesale pricing, 
+                a custom branded storefront, and automated license delivery — all under your brand.
+            </p>
+
+            <!-- STATS ROW -->
+            <div class="ra-hero-stats">
+                <div class="ra-hero-stat">
+                    <strong>340+</strong><span>Active Partners</span>
+                </div>
+                <div class="ra-hero-stat-sep"></div>
+                <div class="ra-hero-stat">
+                    <strong>Rs. 2.4M</strong><span>Paid in March</span>
+                </div>
+                <div class="ra-hero-stat-sep"></div>
+                <div class="ra-hero-stat">
+                    <strong>50%</strong><span>Max Margin</span>
+                </div>
+            </div>
+
+            <!-- SCROLL HINT -->
+            <div class="ra-scroll-hint">
+                <i class="fa-solid fa-chevron-down fa-bounce"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SECTION 2: BENEFITS GRID (Animated Icon Cards)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="ra-section ra-benefits" id="ra-benefits">
+        <div class="ra-container">
+            <div class="ra-section-badge">Why Resellers Choose Nexra</div>
+            <h2 class="tech-font ra-section-title">Everything You Need to Operate at Scale</h2>
+
+            <div class="ra-benefits-grid" id="ra-benefits-grid">
+                <!-- Cards injected by JS from Firestore settings or fallback -->
+                <div class="ra-benefit-card">
+                    <div class="ra-benefit-icon"><i class="fa-solid fa-store"></i></div>
+                    <h3>Custom Storefront</h3>
+                    <p>Your own branded URL with custom logo, accent color, and instant live preview before publishing.</p>
+                </div>
+                <div class="ra-benefit-card">
+                    <div class="ra-benefit-icon"><i class="fa-solid fa-percent"></i></div>
+                    <h3>Wholesale Margins</h3>
+                    <p>Set your own markup from 5% to 50% across all products. You define the profit.</p>
+                </div>
+                <div class="ra-benefit-card">
+                    <div class="ra-benefit-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <h3>Instant Delivery</h3>
+                    <p>Automated license key dispatch and digital delivery — no manual work, ever.</p>
+                </div>
+                <div class="ra-benefit-card">
+                    <div class="ra-benefit-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Real-Time Analytics</h3>
+                    <p>Live sales dashboard, order tracking, and revenue reports updated in milliseconds.</p>
+                </div>
+                <div class="ra-benefit-card">
+                    <div class="ra-benefit-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Platform Protection</h3>
+                    <p>Your customers are protected by Nexra's buyer guarantee and 24/7 support infrastructure.</p>
+                </div>
+                <div class="ra-benefit-card">
+                    <div class="ra-benefit-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                    <h3>WhatsApp CRM</h3>
+                    <p>One-click pre-filled deep-links let your customers reach you instantly without dialing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SECTION 3: MULTI-STEP AUTH GATE
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="ra-section ra-gate-section" id="ra-gate-section">
+        <div class="ra-container ra-gate-container">
+
+            <!-- PROGRESS INDICATOR -->
+            <div class="ra-progress-wrap" id="ra-progress-wrap">
+                <div class="ra-progress-step active" id="rp-s1">
+                    <div class="ra-ps-dot"><i class="fa-solid fa-user"></i></div>
+                    <span>Login</span>
+                </div>
+                <div class="ra-progress-line" id="rpl-1"></div>
+                <div class="ra-progress-step" id="rp-s2">
+                    <div class="ra-ps-dot"><i class="fa-solid fa-envelope-circle-check"></i></div>
+                    <span>Verify</span>
+                </div>
+                <div class="ra-progress-line" id="rpl-2"></div>
+                <div class="ra-progress-step" id="rp-s3">
+                    <div class="ra-ps-dot"><i class="fa-solid fa-key"></i></div>
+                    <span>Key</span>
+                </div>
+                <div class="ra-progress-line" id="rpl-3"></div>
+                <div class="ra-progress-step" id="rp-s4">
+                    <div class="ra-ps-dot"><i class="fa-solid fa-rocket"></i></div>
+                    <span>Access</span>
+                </div>
+            </div>
+
+            <!-- GATE CARD -->
+            <div class="ra-gate-card">
+
+                <!-- STEP 0: NOT LOGGED IN -->
+                <div class="ra-step-panel" id="ra-step-0">
+                    <div class="ra-step-icon-wrap" style="color: #fbbf24;">
+                        <i class="fa-solid fa-lock-keyhole"></i>
+                    </div>
+                    <h2 class="tech-font">Partners-Only Area</h2>
+                    <p class="ra-step-desc">You need a Nexra account before applying for reseller access.</p>
+                    <a href="/user/auth-gate.html?redirect=/reseller/auth-gate.html" class="ra-btn-primary">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login or Create Account
+                    </a>
+                </div>
+
+                <!-- STEP 1: EMAIL NOT VERIFIED -->
+                <div class="ra-step-panel" id="ra-step-1" style="display:none;">
+                    <div class="ra-step-icon-wrap" style="color: #f59e0b;">
+                        <i class="fa-solid fa-envelope-open-text"></i>
+                    </div>
+                    <h2 class="tech-font">Verify Your Email</h2>
+                    <p class="ra-step-desc">Security requires a verified email address before accessing the partner program.</p>
+                    <div class="ra-email-display" id="ra-email-display">—</div>
+                    <button class="ra-btn-primary" id="ra-resend-btn" onclick="NexraResellerAuth.resendVerification()">
+                        <i class="fa-solid fa-paper-plane"></i> Resend Verification Email
+                    </button>
+                    <button class="ra-btn-ghost" onclick="NexraResellerAuth.checkVerification()">
+                        <i class="fa-solid fa-rotate"></i> I've Verified — Refresh
+                    </button>
+                </div>
+
+                <!-- STEP 2: KEY INPUT -->
+                <div class="ra-step-panel" id="ra-step-2" style="display:none;">
+                    <div class="ra-step-icon-wrap" style="color: var(--brand-main);">
+                        <i class="fa-solid fa-key fa-spin-pulse"></i>
+                    </div>
+                    <h2 class="tech-font">Enter Your Reseller Key</h2>
+                    <p class="ra-step-desc">This program is invite-only. Enter the exclusive key provided by the Nexra admin to activate your partner account.</p>
+
+                    <!-- Key Input -->
+                    <div class="ra-key-input-wrap">
+                        <i class="fa-solid fa-hashtag ra-key-prefix-icon"></i>
+                        <input 
+                            type="text" 
+                            id="ra-key-input" 
+                            class="ra-key-input"
+                            placeholder="NEXRA-XXXX-XXXX-XXXX"
+                            maxlength="22"
+                            autocomplete="off"
+                            spellcheck="false"
+                            oninput="NexraResellerAuth.formatKey(this)"
+                            onkeydown="if(event.key==='Enter') NexraResellerAuth.validateKey()"
+                        >
+                    </div>
+
+                    <!-- Validate Button -->
+                    <button class="ra-btn-primary ra-btn-validate" id="ra-validate-btn" onclick="NexraResellerAuth.validateKey()">
+                        <i class="fa-solid fa-shield-halved"></i> Activate Partner Access
+                    </button>
+
+                    <!-- Request Access CTA -->
+                    <div class="ra-request-sep">
+                        <span>Don't have a key yet?</span>
+                    </div>
+                    <a href="#" id="ra-whatsapp-link" class="ra-btn-whatsapp" target="_blank" rel="noopener">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>Request Access from Admin</span>
+                        <span class="ra-wa-pulse"></span>
+                    </a>
+                </div>
+
+                <!-- STEP 3: SUCCESS -->
+                <div class="ra-step-panel" id="ra-step-3" style="display:none;">
+                    <div class="ra-step-icon-wrap ra-success-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h2 class="tech-font">Welcome, Partner! 🎉</h2>
+                    <p class="ra-step-desc">Your reseller account has been activated. Redirecting you to the Agency Control Center...</p>
+                    <div class="ra-loader-ring"></div>
+                </div>
+
+            </div><!-- /.ra-gate-card -->
+
+        </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SECTION 4: SOCIAL PROOF & TESTIMONIALS
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="ra-section ra-proof-section">
+        <div class="ra-container">
+            <div class="ra-section-badge">Partner Stories</div>
+            <h2 class="tech-font ra-section-title">What Our Resellers Say</h2>
+            <div class="ra-testimonials" id="ra-testimonials">
+                <!-- Injected dynamically from Firestore or fallback -->
+                <div class="ra-testi-card">
+                    <div class="ra-testi-stars">★★★★★</div>
+                    <p>"Within the first month I earned Rs. 45,000 in commissions selling software keys to my WhatsApp groups. The storefront setup took 5 minutes."</p>
+                    <div class="ra-testi-author">
+                        <div class="ra-testi-avatar">AR</div>
+                        <div>
+                            <strong>Ahmed R.</strong><br>
+                            <small>Lahore — Active since Jan 2024</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="ra-testi-card">
+                    <div class="ra-testi-stars">★★★★★</div>
+                    <p>"The analytics dashboard tells me exactly which products sell best. I made my investment back in week one and have been profitable every month since."</p>
+                    <div class="ra-testi-author">
+                        <div class="ra-testi-avatar">SF</div>
+                        <div>
+                            <strong>Sara F.</strong><br>
+                            <small>Karachi — Active since Mar 2024</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="ra-testi-card">
+                    <div class="ra-testi-stars">★★★★★</div>
+                    <p>"Best B2B platform in Pakistan, no contest. The WhatsApp deep-link feature alone closes 60% of my sales before the customer even visits my store."</p>
+                    <div class="ra-testi-author">
+                        <div class="ra-testi-avatar">BK</div>
+                        <div>
+                            <strong>Bilal K.</strong><br>
+                            <small>Islamabad — Active since Nov 2023</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MOUNTS -->
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <!-- SCRIPTS -->
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/reseller-auth.js"></script>
+
+    <script>
+        (function NexraResellerAuthBoot() {
+            'use strict';
+            const t = localStorage.getItem('nexra_theme');
+            if (t === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            NexraComponents.load([
+                { file: '/components/header.html', mount: '#header-mount' },
+                { file: '/components/dock.html',   mount: '#dock-mount'   },
+                { file: '/components/footer.html', mount: '#footer-mount' }
+            ]).then(function() { NexraResellerAuth.init(); })
+              .catch(function() { NexraResellerAuth.init(); });
+        })();
+    </script>
+</body>
+</html>

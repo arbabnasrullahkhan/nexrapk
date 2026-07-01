@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!-- NEXRA TECH PK — RESELLER DASHBOARD (reseller/dashboard.html) -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Partner Dashboard | Nexra Tech PK</title>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#020202">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/reseller-dashboard.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+    <div id="rd-guard" class="rd-guard"><div class="rd-guard-icon"><i class="fa-solid fa-chart-mixed fa-beat"></i></div><p class="tech-font">Loading Dashboard...</p></div>
+    <div id="rd-denied" class="rd-error-state" style="display:none;"><i class="fa-solid fa-ban"></i><h2 class="tech-font">Reseller Access Required</h2></div>
+
+    <main id="rd-main" class="rd-container" hidden role="main">
+
+        <!-- WELCOME STRIP -->
+        <div class="rd-welcome">
+            <div>
+                <h1 class="tech-font rd-welcome-title">Welcome back, <span id="rd-user-name">Partner</span> 👋</h1>
+                <p class="rd-welcome-sub">Here's how your store is performing today.</p>
+            </div>
+            <a href="/reseller/storefront.html?storeId=auto" class="rd-btn-view-store" id="rd-view-store-btn">
+                <i class="fa-solid fa-store"></i> View My Store
+            </a>
+        </div>
+
+        <!-- KPI GRID -->
+        <div class="rd-kpi-grid" id="rd-kpi-grid">
+            <div class="rd-kpi-card skeleton" style="height:110px;"></div>
+            <div class="rd-kpi-card skeleton" style="height:110px;"></div>
+            <div class="rd-kpi-card skeleton" style="height:110px;"></div>
+            <div class="rd-kpi-card skeleton" style="height:110px;"></div>
+        </div>
+
+        <!-- SALES CHART -->
+        <div class="rd-chart-section">
+            <div class="rd-chart-header">
+                <h2 class="tech-font rd-chart-title"><i class="fa-solid fa-chart-area"></i> Daily Sales Velocity</h2>
+                <select class="rd-chart-range" id="rd-chart-range" onchange="NexraDashboard.updateChart()">
+                    <option value="7">Last 7 Days</option>
+                    <option value="30" selected>Last 30 Days</option>
+                </select>
+            </div>
+            <div class="rd-chart-wrap">
+                <div id="rd-chart-bars" class="rd-chart-bars">
+                    <!-- Skeleton bars -->
+                    <div class="rd-bar-group skeleton" style="flex:1; height:100%; border-radius:6px;"></div>
+                </div>
+                <div class="rd-chart-xaxis" id="rd-chart-xaxis"></div>
+            </div>
+        </div>
+
+        <!-- RECENT ORDERS -->
+        <div class="rd-orders-section">
+            <div class="rd-section-header">
+                <h2 class="tech-font rd-section-title"><i class="fa-solid fa-bag-shopping"></i> Recent Orders</h2>
+                <a href="/reseller/orders-log.html" class="rd-link-all">View All <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            <div id="rd-recent-orders" class="rd-orders-list">
+                <div class="skeleton" style="height:60px; border-radius:12px;"></div>
+                <div class="skeleton" style="height:60px; border-radius:12px; margin-top:10px;"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FLOATING QUICK ACTIONS ISLAND -->
+    <div class="rd-quick-island" id="rd-quick-island" style="opacity:0; pointer-events:none;">
+        <button class="rd-quick-btn rd-btn-copy" onclick="NexraDashboard.copyStoreLink()" title="Copy Store Link">
+            <i class="fa-solid fa-copy"></i>
+        </button>
+        <div class="rd-island-sep"></div>
+        <a href="/reseller/product-manager.html" class="rd-quick-btn" title="Product Manager">
+            <i class="fa-solid fa-boxes-stacked"></i>
+        </a>
+        <div class="rd-island-sep"></div>
+        <a href="/support/support-hub.html" class="rd-quick-btn rd-btn-support" title="Open Support Ticket">
+            <i class="fa-solid fa-headset"></i>
+        </a>
+    </div>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/reseller-dashboard.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]).then(()=>NexraDashboard.init()).catch(()=>NexraDashboard.init());
+        })();
+    </script>
+</body>
+</html>

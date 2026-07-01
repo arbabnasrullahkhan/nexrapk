@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!-- NEXRA TECH PK — AFFILIATE CENTER (reseller/affiliate-center.html) -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Affiliate Center | Nexra Partner</title>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#020202">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/reseller-affiliate.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+    <div id="ac-guard" class="ac-guard"><div class="ac-guard-icon"><i class="fa-solid fa-bullhorn fa-beat"></i></div><p class="tech-font">Loading Affiliate Center...</p></div>
+    <div id="ac-denied" class="ac-error-state" style="display:none;"><i class="fa-solid fa-ban"></i><h2 class="tech-font">Reseller Access Required</h2></div>
+
+    <main id="ac-main" class="ac-container" hidden role="main">
+
+        <!-- MARKETING KPIs -->
+        <div class="ac-kpi-grid" id="ac-kpi-grid">
+            <div class="ac-kpi-card skeleton" style="height:100px;"></div>
+            <div class="ac-kpi-card skeleton" style="height:100px;"></div>
+            <div class="ac-kpi-card skeleton" style="height:100px;"></div>
+        </div>
+
+        <!-- UTM LINK GENERATOR -->
+        <section class="ac-section">
+            <h2 class="tech-font ac-section-title"><i class="fa-solid fa-link"></i> UTM Tracking Link Generator</h2>
+            <div class="ac-utm-form">
+                <div class="ac-field-group">
+                    <label class="ac-label">Campaign Name</label>
+                    <input type="text" id="ac-utm-campaign" class="ac-input" placeholder="e.g. ramadan-sale">
+                </div>
+                <div class="ac-field-group">
+                    <label class="ac-label">Traffic Source</label>
+                    <select id="ac-utm-source" class="ac-select">
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="direct">Direct / Other</option>
+                    </select>
+                </div>
+                <div class="ac-field-group ac-full">
+                    <label class="ac-label">Generated Link</label>
+                    <div class="ac-generated-wrap">
+                        <span id="ac-generated-url" class="ac-generated-url">—</span>
+                        <button class="ac-copy-btn" onclick="NexraAffiliate.copyUTMLink()"><i class="fa-solid fa-copy"></i></button>
+                    </div>
+                </div>
+                <button class="ac-btn-primary" onclick="NexraAffiliate.generateUTMLink()">
+                    <i class="fa-solid fa-bolt"></i> Generate & Save
+                </button>
+            </div>
+
+            <!-- MY CAMPAIGNS -->
+            <div class="ac-campaigns-list" id="ac-campaigns-list">
+                <div class="skeleton" style="height:70px; border-radius:12px;"></div>
+                <div class="skeleton" style="height:70px; border-radius:12px; margin-top:10px;"></div>
+            </div>
+        </section>
+
+        <!-- PROMO CODE CREATOR -->
+        <section class="ac-section">
+            <h2 class="tech-font ac-section-title"><i class="fa-solid fa-tag"></i> Promo Code Requests</h2>
+            <div class="ac-promo-note">
+                <i class="fa-solid fa-circle-info"></i>
+                Promo codes are tied to your storefront. They will <strong>not work</strong> on products not listed in your store.
+            </div>
+            <div class="ac-promo-form">
+                <div class="ac-field-group">
+                    <label class="ac-label">Desired Code (e.g. @MyAgency5)</label>
+                    <div class="ac-prefix-wrap">
+                        <span class="ac-prefix">@</span>
+                        <input type="text" id="ac-promo-code" class="ac-input ac-input-prefix" placeholder="MyAgency5" maxlength="20">
+                    </div>
+                </div>
+                <div class="ac-field-group">
+                    <label class="ac-label">Discount Type</label>
+                    <select id="ac-promo-type" class="ac-select">
+                        <option value="percentage">Percentage Off (%)</option>
+                        <option value="fixed">Fixed Amount (Rs.)</option>
+                    </select>
+                </div>
+                <div class="ac-field-group">
+                    <label class="ac-label">Discount Value</label>
+                    <input type="number" id="ac-promo-value" class="ac-input" placeholder="e.g. 10" min="1">
+                </div>
+                <button class="ac-btn-primary" id="ac-promo-submit-btn" onclick="NexraAffiliate.requestPromoCode()">
+                    <i class="fa-solid fa-paper-plane"></i> Request Promo Code
+                </button>
+            </div>
+
+            <!-- PROMO CODE STATUS TRACKER -->
+            <div id="ac-promo-codes-list" class="ac-promo-list">
+                <div class="skeleton" style="height:70px; border-radius:12px;"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/reseller-affiliate.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]).then(()=>NexraAffiliate.init()).catch(()=>NexraAffiliate.init());
+        })();
+    </script>
+</body>
+</html>

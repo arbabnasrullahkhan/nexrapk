@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — SHOPIFY-STYLE STORE BUILDER (reseller/store-builder.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  SELF-CONTAINED Live Storefront Customization Engine.               │
+  │  Role-gated: Only users with role == 'reseller' may access.         │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #cart-mount     ← /components/cart-drawer.html                     │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - Role verification: Firestore users/{uid}.role == 'reseller'      │
+  │  - Zero-Cost Media Engine: HTML5 Canvas Base64 image conversion.    │
+  │  - Real-time DOM mirror preview pane.                                │
+  │  - Atomic Firestore write to resellers/{uid}.                       │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+
+    <!-- Anti-Clickjacking Frame Buster -->
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>
+        if (self === top) { var a = document.getElementById("antiClickjack"); a.parentNode.removeChild(a); }
+        else { top.location = self.location; }
+    </script>
+
+    <!-- ════════════ SECURITY: Private Builder UI ════════════ -->
+    <title>Store Builder | Nexra Tech PK</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+
+    <!-- ════════════ FONTS & ICONS ════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════════ STYLESHEETS ════════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/store-builder.css">
+
+    <!-- ════════════ FIREBASE ════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+
+    <!-- Hidden Canvas for Zero-Cost Media Engine -->
+    <canvas id="sb-canvas" style="display:none;"></canvas>
+</head>
+
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="cart-mount"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════════ AUTH GUARD SCREEN ════════════ -->
+    <div id="sb-guard" class="sb-guard">
+        <div class="sb-guard-icon"><i class="fa-solid fa-shop-lock fa-fade"></i></div>
+        <p class="tech-font">Verifying Reseller Credentials...</p>
+    </div>
+
+    <!-- ════════════ ACCESS DENIED STATE ════════════ -->
+    <div id="sb-denied" class="sb-error-state" style="display:none;">
+        <i class="fa-solid fa-ban"></i>
+        <h2 class="tech-font">Access Denied</h2>
+        <p>This tool is exclusively available to verified Nexra Reseller Partners. Apply via your account dashboard.</p>
+        <a href="/reseller/reseller-dashboard.html" class="sb-btn-outline" style="margin-top:24px; display:inline-flex;">Apply for Reseller Access</a>
+    </div>
+
+    <!-- ════════════ MAIN BUILDER UI ════════════ -->
+    <main id="sb-main" class="sb-container" hidden>
+
+        <!-- HEADER BAR -->
+        <div class="sb-topbar">
+            <div class="sb-topbar-title">
+                <i class="fa-solid fa-store" style="color:var(--brand-main);"></i>
+                <h1 class="tech-font">Store Builder</h1>
+            </div>
+            <div class="sb-topbar-actions">
+                <button class="sb-btn-preview" onclick="NexraStoreBuilder.togglePreview()">
+                    <i class="fa-solid fa-eye"></i> <span id="sb-preview-lbl">Hide Preview</span>
+                </button>
+                <button class="sb-btn-publish" id="sb-publish-btn" onclick="NexraStoreBuilder.publish()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Publish Storefront
+                </button>
+            </div>
+        </div>
+
+        <!-- SPLIT-SCREEN LAYOUT -->
+        <div class="sb-workspace" id="sb-workspace">
+
+            <!-- ═══ LEFT: CONTROL PANEL ═══ -->
+            <section class="sb-controls" id="sb-controls">
+
+                <!-- STORE IDENTITY -->
+                <div class="sb-panel">
+                    <div class="sb-panel-header"><i class="fa-solid fa-id-badge"></i> Store Identity</div>
+                    <div class="sb-field-group">
+                        <label class="sb-label">Store Name</label>
+                        <input type="text" id="sb-name" class="sb-input" placeholder="e.g. TechVault PK" maxlength="40" oninput="NexraStoreBuilder.liveSync()">
+                    </div>
+                    <div class="sb-field-group">
+                        <label class="sb-label">SEO Description</label>
+                        <textarea id="sb-desc" class="sb-textarea" placeholder="Brief store description visible in search & WhatsApp previews..." maxlength="160" oninput="NexraStoreBuilder.liveSync()"></textarea>
+                        <div class="sb-char-count"><span id="sb-desc-chars">0</span>/160</div>
+                    </div>
+                    <div class="sb-field-group">
+                        <label class="sb-label">WhatsApp Contact</label>
+                        <div class="sb-input-prefix-wrap">
+                            <span class="sb-input-prefix">+92</span>
+                            <input type="tel" id="sb-whatsapp" class="sb-input sb-input-prefixed" placeholder="3001234567" maxlength="12" oninput="NexraStoreBuilder.liveSync()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BRANDING -->
+                <div class="sb-panel">
+                    <div class="sb-panel-header"><i class="fa-solid fa-palette"></i> Branding</div>
+                    <div class="sb-field-group">
+                        <label class="sb-label">Accent Color</label>
+                        <div class="sb-color-wrap">
+                            <input type="color" id="sb-accent" class="sb-color-input" value="#7c3aed" oninput="NexraStoreBuilder.liveSync()">
+                            <span class="sb-color-hex" id="sb-color-hex">#7c3aed</span>
+                        </div>
+                    </div>
+                    <div class="sb-field-group">
+                        <label class="sb-label">Store Logo</label>
+                        <div class="sb-upload-area" id="sb-logo-drop" onclick="document.getElementById('sb-logo-file').click()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Click or drag PNG/JPG (Max 2MB)</span>
+                            <input type="file" id="sb-logo-file" accept="image/*" style="display:none;" onchange="NexraStoreBuilder.processImage(event, 'logo')">
+                        </div>
+                        <div class="sb-preview-thumb" id="sb-logo-preview" style="display:none;">
+                            <img id="sb-logo-img" src="" alt="Logo Preview">
+                            <button onclick="NexraStoreBuilder.removeImage('logo')"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFIT MARGIN CONTROLLER -->
+                <div class="sb-panel">
+                    <div class="sb-panel-header"><i class="fa-solid fa-chart-line"></i> Profit Margin Controller</div>
+                    <div class="sb-field-group">
+                        <label class="sb-label">Global Markup <span class="sb-badge" id="sb-markup-badge">0%</span></label>
+                        <input type="range" id="sb-markup" class="sb-slider" min="0" max="50" step="1" value="10" oninput="NexraStoreBuilder.updateMarkup()">
+                        <div class="sb-markup-labels"><span>0%</span><span>25%</span><span>50%</span></div>
+                    </div>
+                    <div class="sb-earnings-card">
+                        <div class="sb-earning-item">
+                            <span>Base Product Price</span>
+                            <strong id="sb-base-price">Rs. 1,000</strong>
+                        </div>
+                        <div class="sb-earning-item">
+                            <span>Your Store Price</span>
+                            <strong id="sb-store-price" style="color:var(--brand-main);">Rs. 1,100</strong>
+                        </div>
+                        <div class="sb-earning-item sb-earning-profit">
+                            <span><i class="fa-solid fa-sack-dollar"></i> Your Net Profit</span>
+                            <strong id="sb-profit" style="color:var(--success);">Rs. 100</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ═══ RIGHT: LIVE PREVIEW ═══ -->
+            <section class="sb-preview-pane" id="sb-preview-pane">
+                <div class="sb-preview-label"><i class="fa-solid fa-mobile-screen-button"></i> Live Customer Preview</div>
+                
+                <div class="sb-phone-frame">
+                    <div class="sb-phone-notch"></div>
+                    <div class="sb-phone-screen" id="sb-phone-screen">
+                        
+                        <!-- Preview Hero -->
+                        <div class="sb-prev-hero" id="sb-prev-hero" style="background: linear-gradient(135deg, #7c3aed, #5b21b6);">
+                            <div class="sb-prev-logo-wrap">
+                                <img id="sb-prev-logo" src="/assets/placeholder.jpg" alt="Logo">
+                            </div>
+                        </div>
+                        
+                        <!-- Preview Info -->
+                        <div class="sb-prev-info">
+                            <h2 id="sb-prev-name" class="tech-font">Your Store Name</h2>
+                            <p id="sb-prev-desc">Store description will appear here...</p>
+                            <div class="sb-prev-stats">
+                                <span><i class="fa-solid fa-star" style="color:#fbbf24;"></i> 5.0</span>
+                                <span><i class="fa-solid fa-shield-halved" style="color:#10b981;"></i> Verified</span>
+                                <span><i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> Contact</span>
+                            </div>
+                        </div>
+
+                        <!-- Preview Product Stubs -->
+                        <div class="sb-prev-products">
+                            <div class="sb-prev-prod-card"><div class="sb-prev-prod-img"></div><div class="sb-prev-prod-title">Product 1</div></div>
+                            <div class="sb-prev-prod-card"><div class="sb-prev-prod-img"></div><div class="sb-prev-prod-title">Product 2</div></div>
+                        </div>
+                        
+                        <!-- Accent Stripe -->
+                        <div class="sb-prev-fab" id="sb-prev-fab" style="background:#25D366;">
+                            <i class="fa-brands fa-whatsapp"></i> Contact Vendor
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sb-preview-url" id="sb-preview-url">
+                    nexratech.pk/reseller/storefront.html?storeId=<span id="sb-url-uid">—</span>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/store-builder.js"></script>
+
+    <script>
+        (function() {
+            'use strict';
+            const t = localStorage.getItem('nexra_theme');
+            if (t === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            NexraComponents.load([
+                { file: '/components/header.html',      mount: '#header-mount' },
+                { file: '/components/cart-drawer.html', mount: '#cart-mount'   },
+                { file: '/components/dock.html',        mount: '#dock-mount'   },
+                { file: '/components/footer.html',      mount: '#footer-mount' }
+            ]).then(function() { NexraStoreBuilder.init(); })
+              .catch(function() { NexraStoreBuilder.init(); });
+        })();
+    </script>
+</body>
+</html>

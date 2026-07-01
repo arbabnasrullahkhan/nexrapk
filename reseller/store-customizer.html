@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — STORE CUSTOMIZER (reseller/store-customizer.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  Advanced Code Editor & Dynamic Section Injector for Resellers.     │
+  │  Role-gated: users/{uid}.role === 'reseller' required.              │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - Syntax-highlighting textarea code editor.                         │
+  │  - XSS-sandboxed live split-screen iframe preview.                  │
+  │  - Placement Engine: DOM injection node selector.                   │
+  │  - Atomic write to resellers/{uid}/custom_blocks sub-collection.    │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+
+    <!-- Anti-Clickjacking Frame Buster -->
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>
+        if (self === top) { var a = document.getElementById("antiClickjack"); a.parentNode.removeChild(a); }
+        else { top.location = self.location; }
+    </script>
+
+    <!-- ════════ SECURITY: Private Developer Interface ════════ -->
+    <title>Store Customizer | Nexra Tech PK</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+
+    <!-- ════════ FONTS & ICONS ════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════ STYLESHEETS ════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/store-customizer.css">
+
+    <!-- ════════ FIREBASE ════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════ AUTH GUARD ════════ -->
+    <div id="sc-guard" class="sc-guard">
+        <div class="sc-guard-icon"><i class="fa-solid fa-code fa-fade"></i></div>
+        <p class="tech-font">Loading Customization Workspace...</p>
+    </div>
+
+    <!-- ════════ DENIED STATE ════════ -->
+    <div id="sc-denied" class="sc-error-state" style="display:none;">
+        <i class="fa-solid fa-ban"></i>
+        <h2 class="tech-font">Reseller Access Required</h2>
+        <p>This tool is exclusively available to verified Nexra Reseller Partners.</p>
+        <a href="/reseller/auth-gate.html" class="sc-btn-outline" style="margin-top:24px;">Apply for Partner Access</a>
+    </div>
+
+    <!-- ════════ MAIN CUSTOMIZER WORKSPACE ════════ -->
+    <main id="sc-main" class="sc-container" hidden role="main">
+
+        <!-- TOPBAR -->
+        <div class="sc-topbar">
+            <div class="sc-topbar-title">
+                <i class="fa-solid fa-code" style="color:var(--brand-main);"></i>
+                <div>
+                    <h1 class="tech-font">Store Customizer</h1>
+                    <span class="sc-topbar-sub">Advanced Code Editor & Section Injector</span>
+                </div>
+            </div>
+            <div class="sc-topbar-actions">
+                <button class="sc-btn-secondary" onclick="NexraCustomizer.clearEditor()">
+                    <i class="fa-solid fa-trash-can"></i> Clear
+                </button>
+                <button class="sc-btn-preview-toggle" id="sc-preview-toggle" onclick="NexraCustomizer.togglePreview()">
+                    <i class="fa-solid fa-eye"></i> <span id="sc-preview-lbl">Show Preview</span>
+                </button>
+                <button class="sc-btn-deploy" id="sc-deploy-btn" onclick="NexraCustomizer.deploy()">
+                    <i class="fa-solid fa-rocket"></i> Deploy Section
+                </button>
+            </div>
+        </div>
+
+        <!-- DEPLOYMENT CONFIG STRIP -->
+        <div class="sc-config-strip">
+            <!-- Block Name -->
+            <div class="sc-config-field">
+                <label class="sc-label"><i class="fa-solid fa-tag"></i> Block Name</label>
+                <input type="text" id="sc-block-name" class="sc-input" placeholder="e.g. Ramadan Banner" maxlength="40">
+            </div>
+
+            <!-- Placement Engine Selector -->
+            <div class="sc-config-field">
+                <label class="sc-label"><i class="fa-solid fa-map-pin"></i> Inject Position</label>
+                <div class="sc-select-wrap">
+                    <select id="sc-placement" class="sc-select">
+                        <option value="top_banner">🔝 Top Banner</option>
+                        <option value="above_products">📦 Above Product Grid</option>
+                        <option value="between_categories">📂 Between Categories</option>
+                        <option value="hero_overlay">🎭 Hero Overlay</option>
+                        <option value="sidebar">📌 Sidebar Widget</option>
+                        <option value="footer_inject">👇 Footer Injection</option>
+                        <option value="tracking_pixel">🔍 Tracking Pixel (Hidden)</option>
+                    </select>
+                    <i class="fa-solid fa-chevron-down sc-select-icon"></i>
+                </div>
+            </div>
+
+            <!-- Code Type -->
+            <div class="sc-config-field">
+                <label class="sc-label"><i class="fa-solid fa-file-code"></i> Code Type</label>
+                <div class="sc-type-tabs">
+                    <button class="sc-type-tab active" onclick="NexraCustomizer.setType('html', this)">HTML</button>
+                    <button class="sc-type-tab" onclick="NexraCustomizer.setType('css', this)">CSS</button>
+                    <button class="sc-type-tab" onclick="NexraCustomizer.setType('js', this)">JS</button>
+                    <button class="sc-type-tab" onclick="NexraCustomizer.setType('xml', this)">XML</button>
+                </div>
+            </div>
+
+            <!-- Active Toggle -->
+            <div class="sc-config-field sc-toggle-field">
+                <label class="sc-label"><i class="fa-solid fa-toggle-on"></i> Active</label>
+                <label class="sc-switch">
+                    <input type="checkbox" id="sc-active-toggle" checked>
+                    <span class="sc-switch-knob"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- VISUAL PLACEMENT MAP -->
+        <div class="sc-placement-map" id="sc-placement-map">
+            <div class="sc-map-title"><i class="fa-solid fa-map"></i> Injection Position Map</div>
+            <div class="sc-storefront-preview">
+                <div class="sc-map-zone" data-zone="top_banner" id="sc-zone-top_banner">
+                    <i class="fa-solid fa-grip-lines"></i> Top Banner
+                </div>
+                <div class="sc-map-zone" data-zone="hero_overlay" id="sc-zone-hero_overlay">
+                    <i class="fa-solid fa-image"></i> Hero Overlay
+                </div>
+                <div class="sc-map-zone" data-zone="above_products" id="sc-zone-above_products">
+                    <i class="fa-solid fa-layer-group"></i> Above Products
+                </div>
+                <div class="sc-map-zone sc-map-mid">
+                    <div class="sc-map-zone" data-zone="between_categories" id="sc-zone-between_categories">
+                        <i class="fa-solid fa-horizontal-rule"></i> Between Categories
+                    </div>
+                    <div class="sc-map-zone" data-zone="sidebar" id="sc-zone-sidebar">
+                        <i class="fa-solid fa-sidebar"></i> Sidebar
+                    </div>
+                </div>
+                <div class="sc-map-zone" data-zone="footer_inject" id="sc-zone-footer_inject">
+                    <i class="fa-solid fa-page-break"></i> Footer Injection
+                </div>
+                <div class="sc-map-zone sc-map-tracking" data-zone="tracking_pixel" id="sc-zone-tracking_pixel">
+                    <i class="fa-solid fa-eye-slash"></i> Tracking Pixel (Hidden)
+                </div>
+            </div>
+        </div>
+
+        <!-- SPLIT-SCREEN WORKSPACE -->
+        <div class="sc-workspace" id="sc-workspace">
+
+            <!-- CODE EDITOR PANEL -->
+            <div class="sc-editor-panel" id="sc-editor-panel">
+                <div class="sc-panel-header">
+                    <div class="sc-panel-dots">
+                        <span class="sc-dot sc-dot-red"></span>
+                        <span class="sc-dot sc-dot-yellow"></span>
+                        <span class="sc-dot sc-dot-green"></span>
+                    </div>
+                    <div class="sc-panel-title" id="sc-editor-lang-label">HTML — Custom Block</div>
+                    <div class="sc-panel-actions">
+                        <button class="sc-panel-btn" onclick="NexraCustomizer.formatCode()" title="Format Code">
+                            <i class="fa-solid fa-indent"></i>
+                        </button>
+                        <button class="sc-panel-btn" onclick="NexraCustomizer.copyCode()" title="Copy Code">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Line Numbers + Editor -->
+                <div class="sc-editor-body">
+                    <div class="sc-line-numbers" id="sc-line-numbers">1</div>
+                    <textarea 
+                        id="sc-code-editor" 
+                        class="sc-editor-textarea"
+                        placeholder="<!-- Write your custom HTML, CSS, JS or paste tracking pixels here... -->&#10;&#10;<div class=&quot;custom-banner&quot;>&#10;  <h2>🔥 Ramadan Special!</h2>&#10;  <p>20% OFF all software keys this weekend only</p>&#10;</div>"
+                        spellcheck="false"
+                        autocorrect="off"
+                        autocapitalize="off"
+                        oninput="NexraCustomizer.onEditorInput()"
+                        onkeydown="NexraCustomizer.handleKeydown(event)"
+                        onscroll="NexraCustomizer.syncScroll()"
+                    ></textarea>
+                </div>
+
+                <!-- Editor Footer: Char count, warnings -->
+                <div class="sc-editor-footer">
+                    <div class="sc-editor-info">
+                        <span><i class="fa-solid fa-text-width"></i> <span id="sc-char-count">0</span> chars</span>
+                        <span><i class="fa-solid fa-list-ol"></i> <span id="sc-line-count">1</span> lines</span>
+                    </div>
+                    <div class="sc-xss-status" id="sc-xss-status">
+                        <i class="fa-solid fa-shield-check"></i> XSS Guard Active
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIVE PREVIEW PANEL -->
+            <div class="sc-preview-panel" id="sc-preview-panel" style="display:none;">
+                <div class="sc-panel-header">
+                    <div class="sc-panel-title"><i class="fa-solid fa-eye"></i> Sandboxed Preview</div>
+                    <div class="sc-panel-actions">
+                        <button class="sc-panel-btn" onclick="NexraCustomizer.refreshPreview()" title="Refresh Preview">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+                </div>
+                <iframe 
+                    id="sc-preview-iframe"
+                    class="sc-preview-iframe"
+                    sandbox="allow-scripts allow-same-origin"
+                    title="Sandboxed Code Preview"
+                ></iframe>
+                <div class="sc-sandbox-badge">
+                    <i class="fa-solid fa-box"></i> Sandbox Isolated · Main Domain Protected
+                </div>
+            </div>
+
+        </div><!-- /.sc-workspace -->
+
+        <!-- DEPLOYED BLOCKS LIST -->
+        <div class="sc-blocks-section">
+            <h2 class="tech-font sc-blocks-title"><i class="fa-solid fa-cubes"></i> Deployed Blocks</h2>
+            <div id="sc-blocks-list" class="sc-blocks-list">
+                <div class="skeleton" style="height:80px; border-radius:14px;"></div>
+                <div class="skeleton" style="height:80px; border-radius:14px;"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/store-customizer.js"></script>
+
+    <script>
+        (function() {
+            'use strict';
+            const t = localStorage.getItem('nexra_theme');
+            if (t === 'dark') document.body.setAttribute('data-theme', 'dark');
+            NexraComponents.load([
+                { file: '/components/header.html', mount: '#header-mount' },
+                { file: '/components/dock.html',   mount: '#dock-mount'   },
+                { file: '/components/footer.html', mount: '#footer-mount' }
+            ]).then(function() { NexraCustomizer.init(); })
+              .catch(function() { NexraCustomizer.init(); });
+        })();
+    </script>
+</body>
+</html>

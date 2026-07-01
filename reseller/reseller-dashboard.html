@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — RESELLER / B2B CONTROL CENTER (reseller-dashboard.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  SELF-CONTAINED B2B Agency Portal.                                  │
+  │  Global UI shell elements fetched at runtime from /components/.     │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #cart-mount     ← /components/cart-drawer.html                     │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - Strict Firestore Auth Guard (Role == 'reseller').                 │
+  │  - 6-Tab Architecture (Finances, Store, Wholesale, Keys, Wallet).   │
+  │  - Dynamic Base64 Compression Engine.                               │
+  │  - No-Index SEO Directive for financial privacy.                    │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STRICT ENTERPRISE SECURITY & NO-INDEX DIRECTIVES
+         ════════════════════════════════════════════════════════════════ -->
+    <title>Reseller Portal | Nexra Tech PK</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" id="meta-theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         PRECONNECT & FONTS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STYLESHEETS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/reseller.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FIREBASE SDK & CONFIG
+         ════════════════════════════════════════════════════════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+
+<body>
+    <!-- TOAST & MOUNT POINTS -->
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="cart-mount"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FULL PAGE LOADER (Auth Guard State)
+         ════════════════════════════════════════════════════════════════ -->
+    <div id="rs-pre-guard" class="rs-pre-guard">
+        <div class="rs-guard-spinner"><i class="fa-solid fa-shield-halved fa-beat-fade"></i></div>
+        <p class="tech-font">Verifying Agency Credentials...</p>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         MAIN RESELLER DASHBOARD
+         ════════════════════════════════════════════════════════════════ -->
+    <main id="rs-main" class="rs-container" role="main" hidden>
+        
+        <header class="rs-header">
+            <div class="rs-header-content">
+                <h1 class="tech-font"><i class="fa-solid fa-building-user"></i> Agency Hub</h1>
+                <p>Welcome back, <span id="rs-agency-name" class="text-grad">Partner</span>. Manage your digital empire.</p>
+            </div>
+        </header>
+
+        <div class="rs-dashboard-layout">
+            
+            <!-- ════════════════════════════════════════════════════════════════
+                 SIDE NAV (Desktop) / TOP NAV (Mobile)
+                 ════════════════════════════════════════════════════════════════ -->
+            <nav class="rs-nav">
+                <button class="rs-nav-btn active" onclick="NexraReseller.switchTab('overview', this)"><i class="fa-solid fa-chart-pie"></i> Overview</button>
+                <button class="rs-nav-btn" onclick="NexraReseller.switchTab('store', this)"><i class="fa-solid fa-store"></i> Store Builder</button>
+                <button class="rs-nav-btn" onclick="NexraReseller.switchTab('wholesale', this)"><i class="fa-solid fa-tags"></i> Wholesale Inventory</button>
+                <button class="rs-nav-btn" onclick="NexraReseller.switchTab('keys', this)"><i class="fa-solid fa-key"></i> Key Manager</button>
+                <button class="rs-nav-btn" onclick="NexraReseller.switchTab('wallet', this)"><i class="fa-solid fa-wallet"></i> Payouts</button>
+                <button class="rs-nav-btn" onclick="NexraReseller.switchTab('content', this)"><i class="fa-solid fa-file-pen"></i> Submit Content</button>
+            </nav>
+
+            <!-- ════════════════════════════════════════════════════════════════
+                 CONTENT AREA
+                 ════════════════════════════════════════════════════════════════ -->
+            <div class="rs-content">
+
+                <!-- ==========================================
+                     TAB 1: FINANCIAL OVERVIEW
+                     ========================================== -->
+                <section id="tab-overview" class="rs-tab-panel active">
+                    <h2 class="rs-section-title tech-font">Financial Overview</h2>
+                    
+                    <div class="rs-stats-grid" id="rs-stats-grid">
+                        <!-- Skeletons -->
+                        <div class="rs-stat-card skeleton"><div class="skel-text w-50"></div><div class="skel-title w-80 mt-2"></div></div>
+                        <div class="rs-stat-card skeleton"><div class="skel-text w-50"></div><div class="skel-title w-80 mt-2"></div></div>
+                        <div class="rs-stat-card skeleton"><div class="skel-text w-50"></div><div class="skel-title w-80 mt-2"></div></div>
+                        <div class="rs-stat-card skeleton"><div class="skel-text w-50"></div><div class="skel-title w-80 mt-2"></div></div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 2: STORE BUILDER
+                     ========================================== -->
+                <section id="tab-store" class="rs-tab-panel">
+                    <h2 class="rs-section-title tech-font">Store Builder</h2>
+                    <div class="rs-card">
+                        <form id="rs-store-form" onsubmit="NexraReseller.updateStore(event)">
+                            
+                            <div class="rs-logo-upload-wrap">
+                                <div class="rs-logo-preview" id="rs-logo-preview">
+                                    <i class="fa-solid fa-shop"></i>
+                                </div>
+                                <div>
+                                    <label class="btn btn-outline" style="cursor:pointer;">
+                                        <i class="fa-solid fa-upload"></i> Upload Logo
+                                        <input type="file" id="rs-logo-input" accept="image/*" hidden onchange="NexraReseller.handleLogoUpload(this)">
+                                    </label>
+                                    <p class="rs-hint">Max 1MB. Auto-compressed.</p>
+                                </div>
+                            </div>
+
+                            <div class="rs-input-group mt-4">
+                                <label>Agency / Store Name</label>
+                                <input type="text" id="rs-store-name" class="rs-input" placeholder="e.g. Nexus Tech Solutions" required>
+                            </div>
+
+                            <div class="rs-input-group">
+                                <label>WhatsApp Support Number</label>
+                                <input type="text" id="rs-store-wa" class="rs-input" placeholder="923001234567" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100" id="rs-btn-store-save">Save Store Profile</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 3: WHOLESALE INVENTORY
+                     ========================================== -->
+                <section id="tab-wholesale" class="rs-tab-panel">
+                    <h2 class="rs-section-title tech-font">Wholesale Inventory Manager</h2>
+                    <p class="rs-hint mb-4">Set your custom markup percentage to dynamically calculate your profit margins per sale.</p>
+                    
+                    <div class="rs-markup-control">
+                        <label>Global Markup %</label>
+                        <div class="flex-center" style="gap:10px;">
+                            <input type="number" id="rs-markup-val" class="rs-input" value="20" min="0" max="100" style="width:100px;">
+                            <button class="btn btn-primary" onclick="NexraReseller.applyMarkup()">Apply</button>
+                        </div>
+                    </div>
+
+                    <div class="rs-inventory-grid" id="rs-inventory-grid">
+                        <!-- Skeletons -->
+                        <div class="rs-card skeleton" style="height:140px;"></div>
+                        <div class="rs-card skeleton" style="height:140px;"></div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 4: KEY MANAGER
+                     ========================================== -->
+                <section id="tab-keys" class="rs-tab-panel">
+                    <h2 class="rs-section-title tech-font">Order & Key Management</h2>
+                    <p class="rs-hint mb-4">Deliver assigned digital assets instantly to your clients.</p>
+
+                    <div class="rs-key-list" id="rs-key-list">
+                        <!-- Skeletons -->
+                        <div class="rs-card skeleton" style="height:100px;"></div>
+                        <div class="rs-card skeleton" style="height:100px;"></div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 5: WALLET & PAYOUT
+                     ========================================== -->
+                <section id="tab-wallet" class="rs-tab-panel">
+                    <h2 class="rs-section-title tech-font">Wallet & Payouts</h2>
+                    
+                    <div class="rs-wallet-balance">
+                        <span>Available Balance</span>
+                        <h3 id="rs-avail-bal" class="tech-font">Rs. 0</h3>
+                    </div>
+
+                    <div class="rs-card mt-4">
+                        <h4 class="mb-3">Request Withdrawal</h4>
+                        <form id="rs-payout-form" onsubmit="NexraReseller.submitPayout(event)">
+                            <div class="rs-input-group">
+                                <label>Payout Method</label>
+                                <select id="rs-payout-method" class="rs-input" required>
+                                    <option value="easypaisa">EasyPaisa</option>
+                                    <option value="jazzcash">JazzCash</option>
+                                    <option value="bank">Bank Transfer</option>
+                                </select>
+                            </div>
+                            <div class="rs-input-group">
+                                <label>Account Number / IBAN</label>
+                                <input type="text" id="rs-payout-acc" class="rs-input" placeholder="Account Number" required>
+                            </div>
+                            <div class="rs-input-group">
+                                <label>Amount (Rs.)</label>
+                                <input type="number" id="rs-payout-amt" class="rs-input" placeholder="Min Rs. 5000" min="5000" required>
+                                <p class="rs-hint">Minimum threshold: Rs. 5000</p>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="rs-btn-payout">Submit Request</button>
+                        </form>
+                    </div>
+
+                    <div class="mt-5">
+                        <h4 class="mb-3">Recent Payouts</h4>
+                        <div id="rs-payout-history">
+                            <p class="rs-empty"><i class="fa-solid fa-receipt"></i> No payout history found.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==========================================
+                     TAB 6: CONTENT SUBMISSION
+                     ========================================== -->
+                <section id="tab-content" class="rs-tab-panel">
+                    <h2 class="rs-section-title tech-font">Submit Content</h2>
+                    <p class="rs-hint mb-4">Submit custom freebies or tech articles. Awaiting Super Admin approval.</p>
+
+                    <div class="rs-card">
+                        <form id="rs-content-form" onsubmit="NexraReseller.submitContent(event)">
+                            <div class="rs-input-group">
+                                <label>Content Type</label>
+                                <select id="rs-content-type" class="rs-input" required>
+                                    <option value="freebie">Digital Freebie</option>
+                                    <option value="blog">Tech Article / Blog</option>
+                                </select>
+                            </div>
+                            <div class="rs-input-group">
+                                <label>Title</label>
+                                <input type="text" id="rs-content-title" class="rs-input" required>
+                            </div>
+                            <div class="rs-input-group">
+                                <label>Cover Image</label>
+                                <input type="file" id="rs-content-img" class="rs-input" accept="image/*" required>
+                            </div>
+                            <div class="rs-input-group">
+                                <label>Description / Content</label>
+                                <textarea id="rs-content-desc" class="rs-input" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="rs-btn-content">Submit for Review</button>
+                        </form>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- MOUNTS -->
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <!-- SCRIPTS -->
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/reseller.js"></script>
+
+    <!-- BOOT -->
+    <script>
+        (function NexraResellerBoot() {
+            'use strict';
+            const savedTheme = localStorage.getItem('nexra_theme');
+            if (savedTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            NexraComponents.load([
+                { file: '/components/header.html',      mount: '#header-mount'  },
+                { file: '/components/cart-drawer.html', mount: '#cart-mount'    },
+                { file: '/components/dock.html',        mount: '#dock-mount'    },
+                { file: '/components/footer.html',      mount: '#footer-mount'  }
+            ]).then(function () {
+                NexraReseller.init();
+            }).catch(function (err) {
+                console.error('Boot failed:', err);
+                if (window.NexraReseller) NexraReseller.init();
+            });
+        })();
+    </script>
+</body>
+</html>

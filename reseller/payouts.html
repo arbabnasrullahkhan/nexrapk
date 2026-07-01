@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — RESELLER PAYOUTS HUB (reseller/payouts.html)
+  ============================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Wallet & Payouts | Nexra Partner</title>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#020202">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/reseller-payouts.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+
+    <div id="pw-guard" class="pw-guard"><div class="pw-guard-icon"><i class="fa-solid fa-wallet fa-beat"></i></div><p class="tech-font">Loading Financial Hub...</p></div>
+    <div id="pw-denied" class="pw-error-state" style="display:none;"><i class="fa-solid fa-ban"></i><h2 class="tech-font">Reseller Access Required</h2><p>This area is exclusive to verified Nexra Reseller Partners.</p></div>
+
+    <main id="pw-main" class="pw-container" hidden role="main">
+
+        <!-- BALANCE HERO CARD -->
+        <div class="pw-balance-hero">
+            <div class="pw-balance-glow"></div>
+            <div class="pw-balance-label"><i class="fa-solid fa-coins"></i> Available Balance</div>
+            <div class="pw-balance-amount">
+                <span class="pw-currency">Rs.</span>
+                <span class="pw-amount tech-font" id="pw-balance">0</span>
+            </div>
+            <div class="pw-balance-sub" id="pw-pending-label">Pending: Rs. 0</div>
+            <div class="pw-balance-actions">
+                <button class="pw-btn-withdraw" id="pw-withdraw-btn" onclick="NexraPayouts.openWithdrawModal()">
+                    <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
+                </button>
+                <a href="/reseller/orders-log.html" class="pw-btn-history">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Payout History
+                </a>
+            </div>
+        </div>
+
+        <!-- PAYOUT METHOD CARDS -->
+        <section class="pw-section">
+            <h2 class="tech-font pw-section-title"><i class="fa-solid fa-landmark"></i> Payment Receiving Methods</h2>
+            <p class="pw-section-sub">Add or update your payout accounts. Only verified accounts are eligible for withdrawals.</p>
+
+            <div class="pw-methods-grid" id="pw-methods-grid">
+                <!-- EasyPaisa -->
+                <div class="pw-method-card" data-method="easypaisa">
+                    <div class="pw-method-header pw-ep"><div class="pw-method-logo"><i class="fa-solid fa-mobile-screen"></i> EasyPaisa</div><div class="pw-method-badge" id="pw-badge-easypaisa">Not Saved</div></div>
+                    <div class="pw-method-body">
+                        <input type="tel" id="pw-easypaisa-number" class="pw-input" placeholder="03xx-xxxxxxx" maxlength="12">
+                        <input type="text"  id="pw-easypaisa-name"   class="pw-input" placeholder="Account Name">
+                    </div>
+                    <button class="pw-btn-save" onclick="NexraPayouts.saveMethod('easypaisa')"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                </div>
+
+                <!-- JazzCash -->
+                <div class="pw-method-card" data-method="jazzcash">
+                    <div class="pw-method-header pw-jc"><div class="pw-method-logo"><i class="fa-solid fa-mobile-screen"></i> JazzCash</div><div class="pw-method-badge" id="pw-badge-jazzcash">Not Saved</div></div>
+                    <div class="pw-method-body">
+                        <input type="tel" id="pw-jazzcash-number" class="pw-input" placeholder="03xx-xxxxxxx" maxlength="12">
+                        <input type="text"  id="pw-jazzcash-name"   class="pw-input" placeholder="Account Name">
+                    </div>
+                    <button class="pw-btn-save" onclick="NexraPayouts.saveMethod('jazzcash')"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                </div>
+
+                <!-- SadaPay -->
+                <div class="pw-method-card" data-method="sadapay">
+                    <div class="pw-method-header pw-sp"><div class="pw-method-logo"><i class="fa-solid fa-credit-card"></i> SadaPay</div><div class="pw-method-badge" id="pw-badge-sadapay">Not Saved</div></div>
+                    <div class="pw-method-body">
+                        <input type="tel" id="pw-sadapay-number" class="pw-input" placeholder="03xx-xxxxxxx" maxlength="12">
+                        <input type="text"  id="pw-sadapay-name"   class="pw-input" placeholder="Account Name">
+                    </div>
+                    <button class="pw-btn-save" onclick="NexraPayouts.saveMethod('sadapay')"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                </div>
+
+                <!-- NayaPay -->
+                <div class="pw-method-card" data-method="nayapay">
+                    <div class="pw-method-header pw-np"><div class="pw-method-logo"><i class="fa-solid fa-wallet"></i> NayaPay</div><div class="pw-method-badge" id="pw-badge-nayapay">Not Saved</div></div>
+                    <div class="pw-method-body">
+                        <input type="tel" id="pw-nayapay-number" class="pw-input" placeholder="03xx-xxxxxxx" maxlength="12">
+                        <input type="text"  id="pw-nayapay-name"   class="pw-input" placeholder="Account Name">
+                    </div>
+                    <button class="pw-btn-save" onclick="NexraPayouts.saveMethod('nayapay')"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                </div>
+
+                <!-- Bank Transfer -->
+                <div class="pw-method-card pw-full" data-method="bank">
+                    <div class="pw-method-header pw-bk"><div class="pw-method-logo"><i class="fa-solid fa-building-columns"></i> Bank Transfer</div><div class="pw-method-badge" id="pw-badge-bank">Not Saved</div></div>
+                    <div class="pw-method-body pw-method-body-grid">
+                        <input type="text" id="pw-bank-name"    class="pw-input" placeholder="Bank Name (e.g. HBL)">
+                        <input type="text" id="pw-bank-account" class="pw-input" placeholder="Account Number">
+                        <input type="text" id="pw-bank-title"   class="pw-input" placeholder="Account Title">
+                        <input type="text" id="pw-bank-iban"    class="pw-input" placeholder="IBAN (optional)">
+                    </div>
+                    <button class="pw-btn-save" onclick="NexraPayouts.saveMethod('bank')"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                </div>
+
+                <!-- Binance USDT -->
+                <div class="pw-method-card pw-full" data-method="binance">
+                    <div class="pw-method-header pw-bn"><div class="pw-method-logo"><i class="fa-solid fa-bitcoin-sign"></i> Binance (USDT TRC-20)</div><div class="pw-method-badge" id="pw-badge-binance">Not Saved</div></div>
+                    <div class="pw-method-body">
+                        <input type="text" id="pw-binance-address" class="pw-input pw-mono" placeholder="TRC-20 Wallet Address">
+                        <input type="text" id="pw-binance-name"    class="pw-input" placeholder="Account Holder Name">
+                    </div>
+                    <button class="pw-btn-save" onclick="NexraPayouts.saveMethod('binance')"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RECENT PAYOUT REQUESTS -->
+        <section class="pw-section">
+            <h2 class="tech-font pw-section-title"><i class="fa-solid fa-receipt"></i> Recent Requests</h2>
+            <div id="pw-history-list" class="pw-history-list">
+                <div class="skeleton" style="height:70px; border-radius:12px;"></div>
+                <div class="skeleton" style="height:70px; border-radius:12px; margin-top:10px;"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- WITHDRAWAL MODAL -->
+    <div class="pw-modal-overlay" id="pw-modal" style="display:none;" onclick="NexraPayouts.closeModal(event)">
+        <div class="pw-modal-card">
+            <div class="pw-modal-header">
+                <h3 class="tech-font"><i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal</h3>
+                <button class="pw-modal-close" onclick="NexraPayouts.closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="pw-modal-body">
+                <div class="pw-modal-balance">Available: <strong id="pw-modal-available">Rs. 0</strong></div>
+                <div class="pw-modal-field">
+                    <label class="pw-label">Amount (PKR)</label>
+                    <input type="number" id="pw-withdraw-amount" class="pw-input" placeholder="Minimum: Rs. 500" min="500">
+                </div>
+                <div class="pw-modal-field">
+                    <label class="pw-label">Select Gateway</label>
+                    <select id="pw-gateway-select" class="pw-select">
+                        <option value="">Choose payment method...</option>
+                    </select>
+                </div>
+                <div class="pw-modal-field">
+                    <label class="pw-label">Note (Optional)</label>
+                    <input type="text" id="pw-withdraw-note" class="pw-input" placeholder="Any special instructions...">
+                </div>
+                <button class="pw-btn-submit-withdraw" id="pw-submit-withdraw" onclick="NexraPayouts.submitWithdrawal()">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/reseller-payouts.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]).then(()=>NexraPayouts.init()).catch(()=>NexraPayouts.init());
+        })();
+    </script>
+</body>
+</html>

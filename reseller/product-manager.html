@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — PRODUCT MANAGER (reseller/product-manager.html)
+  ============================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Product Manager | Nexra Partner</title>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#020202">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/reseller-products.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+    <canvas id="rp-wm-canvas" style="display:none;"></canvas>
+</head>
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+    <div id="rp-guard" class="rp-guard"><div class="rp-guard-icon"><i class="fa-solid fa-box-open fa-beat"></i></div><p class="tech-font">Loading Product Manager...</p></div>
+    <div id="rp-denied" class="rp-error-state" style="display:none;"><i class="fa-solid fa-ban"></i><h2 class="tech-font">Reseller Access Required</h2></div>
+
+    <main id="rp-main" class="rp-container" hidden role="main">
+
+        <!-- TOPBAR -->
+        <div class="rp-topbar">
+            <div class="rp-topbar-left">
+                <h1 class="tech-font"><i class="fa-solid fa-boxes-stacked" style="color:var(--brand-main);"></i> Product Manager</h1>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="rp-tabs" role="tablist">
+            <button class="rp-tab active" role="tab" onclick="NexraProducts.switchTab('custom', this)">
+                <i class="fa-solid fa-plus-circle"></i> My Products
+            </button>
+            <button class="rp-tab" role="tab" onclick="NexraProducts.switchTab('catalog', this)">
+                <i class="fa-solid fa-store"></i> Master Catalog
+            </button>
+        </div>
+
+        <!-- ════ TAB: MY CUSTOM PRODUCTS ════ -->
+        <div id="rp-tab-custom" class="rp-tab-panel">
+
+            <!-- UPLOAD FORM -->
+            <div class="rp-form-card">
+                <h2 class="tech-font rp-form-title"><i class="fa-solid fa-upload"></i> Add Custom Product</h2>
+
+                <!-- IMAGE UPLOAD (max 3) -->
+                <div class="rp-field-group">
+                    <label class="rp-label">Product Images <span class="rp-label-hint">(Max 3 — watermark auto-applied)</span></label>
+                    <div class="rp-image-upload-grid">
+                        <div class="rp-img-slot" id="rp-img-0" onclick="document.getElementById('rp-file-0').click()">
+                            <i class="fa-solid fa-plus"></i>
+                            <input type="file" id="rp-file-0" accept="image/*" style="display:none;" onchange="NexraProducts.processImage(event, 0)">
+                        </div>
+                        <div class="rp-img-slot" id="rp-img-1" onclick="document.getElementById('rp-file-1').click()">
+                            <i class="fa-solid fa-plus"></i>
+                            <input type="file" id="rp-file-1" accept="image/*" style="display:none;" onchange="NexraProducts.processImage(event, 1)">
+                        </div>
+                        <div class="rp-img-slot" id="rp-img-2" onclick="document.getElementById('rp-file-2').click()">
+                            <i class="fa-solid fa-plus"></i>
+                            <input type="file" id="rp-file-2" accept="image/*" style="display:none;" onchange="NexraProducts.processImage(event, 2)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rp-form-grid">
+                    <div class="rp-field-group rp-full">
+                        <label class="rp-label">Product Title</label>
+                        <input type="text" id="rp-title" class="rp-input" placeholder="e.g. Microsoft Office 2024 Key">
+                    </div>
+                    <div class="rp-field-group">
+                        <label class="rp-label">Category</label>
+                        <select id="rp-category" class="rp-select">
+                            <option value="software">Software</option>
+                            <option value="vpn">VPN / Security</option>
+                            <option value="design">Design Tools</option>
+                            <option value="saas">SaaS Subscription</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="rp-field-group">
+                        <label class="rp-label">Price (PKR)</label>
+                        <input type="number" id="rp-price" class="rp-input" placeholder="e.g. 1200" min="0">
+                    </div>
+                    <div class="rp-field-group rp-full">
+                        <label class="rp-label">Description</label>
+                        <textarea id="rp-desc" class="rp-textarea" rows="4" placeholder="Describe your product in detail..."></textarea>
+                    </div>
+                    <!-- COD TOGGLE — hidden if admin disabled globally -->
+                    <div class="rp-field-group rp-cod-group" id="rp-cod-group" style="display:none;">
+                        <label class="rp-label"><i class="fa-solid fa-truck-ramp-box"></i> Cash on Delivery</label>
+                        <label class="rp-switch">
+                            <input type="checkbox" id="rp-cod-toggle">
+                            <span class="rp-switch-knob"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="rp-btn-publish" id="rp-publish-btn" onclick="NexraProducts.publishProduct()">
+                    <i class="fa-solid fa-rocket"></i> Publish Product
+                </button>
+            </div>
+
+            <!-- MY PRODUCTS GRID -->
+            <div id="rp-my-products-grid" class="rp-products-grid">
+                <div class="skeleton" style="height:200px; border-radius:16px;"></div>
+                <div class="skeleton" style="height:200px; border-radius:16px;"></div>
+            </div>
+        </div>
+
+        <!-- ════ TAB: MASTER CATALOG ════ -->
+        <div id="rp-tab-catalog" class="rp-tab-panel" style="display:none;">
+            <div class="rp-catalog-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="rp-catalog-search" class="rp-search-input" placeholder="Search Nexra catalog..." oninput="NexraProducts.filterCatalog(this.value)">
+            </div>
+            <div id="rp-catalog-grid" class="rp-products-grid">
+                <div class="skeleton" style="height:220px; border-radius:16px;"></div>
+                <div class="skeleton" style="height:220px; border-radius:16px;"></div>
+                <div class="skeleton" style="height:220px; border-radius:16px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MARGIN MODAL -->
+    <div class="rp-modal-overlay" id="rp-margin-modal" style="display:none;" onclick="NexraProducts.closeMarginModal(event)">
+        <div class="rp-modal-card">
+            <h3 class="tech-font"><i class="fa-solid fa-percent"></i> Add to My Store</h3>
+            <div id="rp-modal-product-name" class="rp-modal-product-name"></div>
+            <div class="rp-margin-calc">
+                <div class="rp-calc-row"><span>Base Price</span><strong id="rp-modal-base">Rs. 0</strong></div>
+                <div class="rp-calc-row rp-markup-row">
+                    <span>Your Markup (Rs.)</span>
+                    <input type="number" id="rp-markup-input" class="rp-input rp-markup-input" value="200" min="0" oninput="NexraProducts.recalcMargin()">
+                </div>
+                <div class="rp-calc-row rp-final-price"><span>Store Price</span><strong id="rp-modal-final" class="rp-brand-color">Rs. 0</strong></div>
+            </div>
+            <button class="rp-btn-publish" onclick="NexraProducts.addToStore()"><i class="fa-solid fa-plus"></i> Add to My Store</button>
+        </div>
+    </div>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/reseller-products.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]).then(()=>NexraProducts.init()).catch(()=>NexraProducts.init());
+        })();
+    </script>
+</body>
+</html>

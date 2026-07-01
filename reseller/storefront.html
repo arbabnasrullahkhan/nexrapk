@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — CUSTOM BRANDED VENDOR STORE (reseller/storefront.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  SELF-CONTAINED Decentralized Storefront Engine.                    │
+  │  Global UI shell elements fetched at runtime from /components/.     │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #cart-mount     ← /components/cart-drawer.html                     │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - URL Params ?storeId= dynamic routing & data fetch.               │
+  │  - Dynamic Markup: Calculates prices using reseller's markup.       │
+  │  - JSON-LD Store & ProfilePage dynamic injection.                   │
+  │  - Contact Vendor Floating Action Button (WhatsApp).                │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SEO, OPEN GRAPH & TWITTER CARDS (Dynamically updated via JS)
+         ════════════════════════════════════════════════════════════════ -->
+    <title id="meta-title">Official Partner Store | Nexra Tech PK</title>
+    <meta name="description" id="meta-desc" content="Shop verified software, tools, and SaaS bundles from official Nexra Tech partners.">
+    <meta name="keywords" content="Nexra Tech Reseller, Official Store, Partner Program, Software Store, Web Tools">
+    <meta name="author" content="Nexra Tech PK">
+    <link rel="canonical" id="meta-canonical" href="https://nexratech.pk/reseller/storefront.html">
+
+    <meta property="og:type" content="profile">
+    <meta property="og:title" id="og-title" content="Partner Store | Nexra Tech PK">
+    <meta property="og:description" id="og-desc" content="Shop securely from our verified partner network.">
+    <meta property="og:url" id="og-url" content="https://nexratech.pk/reseller/storefront.html">
+    <meta property="og:image" id="og-image" content="https://nexratech.pk/assets/og-store.jpg">
+    <meta property="og:site_name" content="Nexra Tech PK">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="tw-title" content="Partner Store">
+    <meta name="twitter:description" id="tw-desc" content="Shop securely from our verified partner network.">
+    <meta name="twitter:image" id="tw-image" content="https://nexratech.pk/assets/twitter-store.jpg">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" id="meta-theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         PRECONNECT & FONTS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STYLESHEETS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/storefront.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FIREBASE SDK & CONFIG
+         ════════════════════════════════════════════════════════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+
+    <!-- Dynamic JSON-LD Mount -->
+    <script type="application/ld+json" id="sf-json-ld">{}</script>
+</head>
+
+<body>
+    <!-- TOAST & MOUNT POINTS -->
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="cart-mount"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         MAIN STOREFRONT LAYOUT
+         ════════════════════════════════════════════════════════════════ -->
+    <main id="sf-main" class="sf-container" role="main">
+        
+        <!-- SKELETON: HERO PROFILE -->
+        <div id="sf-hero-skeleton" class="sf-hero skeleton" style="border-radius: 24px;"></div>
+
+        <!-- HERO PROFILE -->
+        <header class="sf-hero" id="sf-hero-content" style="display: none;">
+            <div class="sf-hero-bg"></div>
+            
+            <div class="sf-hero-top">
+                <div class="sf-brand-avatar">
+                    <img id="sf-logo" src="/assets/placeholder.jpg" alt="Store Logo">
+                    <div class="sf-verified-badge" title="Verified Nexra Partner"><i class="fa-solid fa-check-circle"></i></div>
+                </div>
+                <div class="sf-hero-actions">
+                    <button class="sf-btn-icon" onclick="NexraStorefront.shareStore()" title="Share Store"><i class="fa-solid fa-share-nodes"></i></button>
+                </div>
+            </div>
+
+            <div class="sf-hero-info">
+                <h1 class="sf-store-name tech-font" id="sf-name">Store Name</h1>
+                <p class="sf-store-desc" id="sf-desc">Official Reseller</p>
+                
+                <div class="sf-trust-stats">
+                    <div class="sf-stat">
+                        <i class="fa-solid fa-star"></i>
+                        <span id="sf-rating">4.9 (120)</span>
+                    </div>
+                    <div class="sf-stat">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Buyer Protection</span>
+                    </div>
+                    <div class="sf-stat">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Instant Delivery</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- STORE NOT FOUND STATE -->
+        <div class="sf-error-state" id="sf-error-state" style="display: none;">
+            <i class="fa-solid fa-store-slash"></i>
+            <h2 class="tech-font">Store Not Found</h2>
+            <p>This partner store doesn't exist or is currently suspended.</p>
+            <a href="/" class="sf-btn-outline" style="margin-top:20px; display:inline-block;"><i class="fa-solid fa-arrow-left"></i> Return to Main Catalog</a>
+        </div>
+
+        <!-- SEARCH & INVENTORY CONTROLS -->
+        <div class="sf-toolbar" id="sf-toolbar" style="display: none;">
+            <div class="sf-search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="sf-search-input" placeholder="Search this store..." onkeyup="NexraStorefront.debounceSearch(event)">
+            </div>
+        </div>
+
+        <!-- INVENTORY GRID -->
+        <div class="sf-inventory-grid" id="sf-inventory-grid">
+            <!-- Skeletons (x4) -->
+            <div class="sf-prod-card skeleton" style="height:320px;"></div>
+            <div class="sf-prod-card skeleton" style="height:320px;"></div>
+            <div class="sf-prod-card skeleton" style="height:320px;"></div>
+            <div class="sf-prod-card skeleton" style="height:320px;"></div>
+        </div>
+
+    </main>
+
+    <!-- FLOATING CONTACT BUTTON -->
+    <a href="#" class="sf-fab-whatsapp" id="sf-fab-whatsapp" style="display: none;" target="_blank" rel="noopener noreferrer">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span>Contact Vendor</span>
+    </a>
+
+    <!-- MOUNTS -->
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <!-- SCRIPTS -->
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/storefront.js"></script>
+
+    <!-- BOOT -->
+    <script>
+        (function NexraStorefrontBoot() {
+            'use strict';
+            const savedTheme = localStorage.getItem('nexra_theme');
+            if (savedTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            NexraComponents.load([
+                { file: '/components/header.html',      mount: '#header-mount'  },
+                { file: '/components/cart-drawer.html', mount: '#cart-mount'    },
+                { file: '/components/dock.html',        mount: '#dock-mount'    },
+                { file: '/components/footer.html',      mount: '#footer-mount'  }
+            ]).then(function () {
+                NexraStorefront.init();
+            }).catch(function (err) {
+                console.error('Boot failed:', err);
+                if (window.NexraStorefront) NexraStorefront.init();
+            });
+        })();
+    </script>
+</body>
+</html>

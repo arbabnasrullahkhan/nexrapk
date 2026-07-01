@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — ACCOUNT HEALTH (reseller/account-health.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  Store Compliance, Warnings & Support Hub for Reseller Partners.    │
+  │  Role-gated: users/{uid}.role === 'reseller' required.              │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount, #dock-mount, #footer-mount                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - onSnapshot on resellers/{uid} for real-time health status.       │
+  │  - Status states: active, warning, restricted, banned.              │
+  │  - Appeal & Direct Support form → tickets collection.               │
+  │  - Celebratory state for resellers in good standing.                │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Anti-Clickjacking Frame Buster -->
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>
+        if (self === top) { var a = document.getElementById("antiClickjack"); a.parentNode.removeChild(a); }
+        else { top.location = self.location; }
+    </script>
+
+    <!-- ════════ SECURITY ════════ -->
+    <title>Account Health | Nexra Tech PK Partner</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+
+    <!-- ════════ FONTS & ICONS ════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════ STYLESHEETS ════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/account-health.css">
+
+    <!-- ════════ FIREBASE ════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════ AUTH GUARD ════════ -->
+    <div id="ah-guard" class="ah-guard">
+        <div class="ah-guard-icon"><i class="fa-solid fa-heartbeat fa-fade"></i></div>
+        <p class="tech-font">Loading Account Health...</p>
+    </div>
+
+    <!-- ════════ DENIED STATE ════════ -->
+    <div id="ah-denied" class="ah-error-state" style="display:none;">
+        <i class="fa-solid fa-ban"></i>
+        <h2 class="tech-font">Reseller Access Required</h2>
+        <p>This page is only available to verified Nexra Reseller Partners.</p>
+    </div>
+
+    <!-- ════════ MAIN CONTENT ════════ -->
+    <main id="ah-main" class="ah-container" hidden role="main">
+
+        <!-- PAGE HEADER -->
+        <header class="ah-page-header">
+            <div class="ah-header-info">
+                <h1 class="tech-font"><i class="fa-solid fa-heart-pulse" style="color:var(--brand-main);"></i> Account Health</h1>
+                <p>Real-time compliance monitoring and direct support channel for your partner store.</p>
+            </div>
+            <div class="ah-header-status" id="ah-status-badge">
+                <div class="skeleton" style="width:120px; height:36px; border-radius:50px;"></div>
+            </div>
+        </header>
+
+        <!-- COMPLIANCE SKELETON -->
+        <div id="ah-skeleton" class="ah-skeleton">
+            <div class="skeleton" style="height:120px; border-radius:20px; margin-bottom:20px;"></div>
+            <div class="skeleton" style="height:200px; border-radius:20px;"></div>
+        </div>
+
+        <!-- ═══ HEALTH CONTENT (Shown once data loads) ═══ -->
+        <div id="ah-content" style="display:none;">
+
+            <!-- ALERT BANNERS (Dynamic — shown only if status != active) -->
+            <div id="ah-alert-zone"></div>
+
+            <!-- STORE HEALTH DASHBOARD -->
+            <div class="ah-dashboard-grid" id="ah-dashboard-grid">
+                <!-- Injected by JS -->
+            </div>
+
+            <!-- FEATURE LOCK STATUS -->
+            <div class="ah-features-section" id="ah-features-section" style="display:none;">
+                <h2 class="tech-font ah-section-title"><i class="fa-solid fa-lock"></i> Feature Status</h2>
+                <div class="ah-features-grid" id="ah-features-grid">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <!-- GOOD STANDING STATE -->
+            <div class="ah-excellent-state" id="ah-excellent-state" style="display:none;">
+                <div class="ah-excellent-icon">✨</div>
+                <h2 class="tech-font">Excellent Standing!</h2>
+                <p>Your store is fully compliant and all features are active. Keep up the fantastic work!</p>
+                <div class="ah-excellent-stats" id="ah-excellent-stats">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <!-- STRIKES HISTORY -->
+            <div class="ah-strikes-section" id="ah-strikes-section" style="display:none;">
+                <h2 class="tech-font ah-section-title"><i class="fa-solid fa-triangle-exclamation"></i> Strike History</h2>
+                <div class="ah-strikes-list" id="ah-strikes-list">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <!-- APPEAL & DIRECT SUPPORT MODULE -->
+            <div class="ah-appeal-section" id="ah-appeal-section">
+                <div class="ah-appeal-card">
+                    <div class="ah-appeal-header">
+                        <h2 class="tech-font"><i class="fa-solid fa-message-pen"></i> <span id="ah-appeal-title">Contact Support</span></h2>
+                        <p id="ah-appeal-desc">Reach out to the Nexra admin team for any store-related issues or questions.</p>
+                    </div>
+
+                    <div class="ah-appeal-form" id="ah-appeal-form">
+                        <div class="ah-field-group">
+                            <label class="ah-label">Subject</label>
+                            <select id="ah-appeal-subject" class="ah-input">
+                                <option value="general">General Support</option>
+                                <option value="appeal_warning">Appeal Warning Strike</option>
+                                <option value="appeal_restriction">Appeal Restriction</option>
+                                <option value="payout_issue">Payout Issue</option>
+                                <option value="catalog_issue">Product Catalog Issue</option>
+                                <option value="technical">Technical Problem</option>
+                            </select>
+                        </div>
+                        <div class="ah-field-group">
+                            <label class="ah-label">Your Message</label>
+                            <textarea 
+                                id="ah-appeal-message" 
+                                class="ah-textarea"
+                                placeholder="Describe your issue or appeal clearly. Include relevant order IDs, dates, and any context that will help the admin resolve your case quickly..."
+                                maxlength="2000"
+                                rows="6"
+                                oninput="document.getElementById('ah-msg-chars').innerText = this.value.length"
+                            ></textarea>
+                            <div style="text-align:right; font-size:11px; color:var(--text-300); margin-top:4px;">
+                                <span id="ah-msg-chars">0</span>/2000
+                            </div>
+                        </div>
+
+                        <div class="ah-field-group">
+                            <label class="ah-label">Priority Level</label>
+                            <div class="ah-priority-wrap">
+                                <label class="ah-priority-option">
+                                    <input type="radio" name="ah-priority" value="normal" checked>
+                                    <span class="ah-priority-label ah-p-normal">Normal</span>
+                                </label>
+                                <label class="ah-priority-option">
+                                    <input type="radio" name="ah-priority" value="high">
+                                    <span class="ah-priority-label ah-p-high">High</span>
+                                </label>
+                                <label class="ah-priority-option">
+                                    <input type="radio" name="ah-priority" value="urgent">
+                                    <span class="ah-priority-label ah-p-urgent">Urgent</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button class="ah-btn-submit" id="ah-submit-btn" onclick="NexraAccountHealth.submitAppeal()">
+                            <i class="fa-solid fa-paper-plane"></i> Submit to Admin
+                        </button>
+                    </div>
+
+                    <!-- Submitted State -->
+                    <div class="ah-submitted-state" id="ah-submitted-state" style="display:none;">
+                        <i class="fa-solid fa-check-circle"></i>
+                        <h3>Appeal Submitted!</h3>
+                        <p>Your message has been escalated directly to the Super Admin. Expect a response within 24 hours.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /#ah-content -->
+
+    </main>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/account-health.js"></script>
+
+    <script>
+        (function() {
+            'use strict';
+            const t = localStorage.getItem('nexra_theme');
+            if (t === 'dark') document.body.setAttribute('data-theme', 'dark');
+            NexraComponents.load([
+                { file: '/components/header.html', mount: '#header-mount' },
+                { file: '/components/dock.html',   mount: '#dock-mount'   },
+                { file: '/components/footer.html', mount: '#footer-mount' }
+            ]).then(function() { NexraAccountHealth.init(); })
+              .catch(function() { NexraAccountHealth.init(); });
+        })();
+    </script>
+</body>
+</html>

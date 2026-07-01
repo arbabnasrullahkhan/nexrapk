@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!-- NEXRA TECH PK — SUBMISSIONS PORTAL (reseller/submissions.html) -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Content Submissions | Nexra Partner</title>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#020202">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/reseller-submissions.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+    <canvas id="sub-canvas" style="display:none;"></canvas>
+</head>
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+    <div id="sub-guard" class="sub-guard"><div class="sub-guard-icon"><i class="fa-solid fa-feather fa-beat"></i></div><p class="tech-font">Loading Submission Portal...</p></div>
+    <div id="sub-denied" class="sub-error-state" style="display:none;"><i class="fa-solid fa-ban"></i><h2 class="tech-font">Reseller Access Required</h2></div>
+
+    <main id="sub-main" class="sub-container" hidden role="main">
+
+        <!-- MULTI-STEP SUBMISSION FORM -->
+        <div class="sub-form-card">
+            <!-- Step Progress -->
+            <div class="sub-steps">
+                <div class="sub-step active" id="sub-step-1">
+                    <div class="sub-step-dot">1</div><span>Type</span>
+                </div>
+                <div class="sub-step-line" id="sub-sline-1"></div>
+                <div class="sub-step" id="sub-step-2">
+                    <div class="sub-step-dot">2</div><span>Details</span>
+                </div>
+                <div class="sub-step-line" id="sub-sline-2"></div>
+                <div class="sub-step" id="sub-step-3">
+                    <div class="sub-step-dot">3</div><span>Media</span>
+                </div>
+                <div class="sub-step-line" id="sub-sline-3"></div>
+                <div class="sub-step" id="sub-step-4">
+                    <div class="sub-step-dot"><i class="fa-solid fa-check"></i></div><span>Publish</span>
+                </div>
+            </div>
+
+            <!-- STEP 1: TYPE -->
+            <div id="sub-panel-1" class="sub-step-panel">
+                <h2 class="tech-font sub-panel-title">What are you submitting?</h2>
+                <div class="sub-type-grid">
+                    <div class="sub-type-card" onclick="NexraSubmissions.selectType('freebie', this)">
+                        <i class="fa-solid fa-gift"></i>
+                        <strong>Freebie Tool</strong>
+                        <p>A free download, tool, or resource for the community.</p>
+                    </div>
+                    <div class="sub-type-card" onclick="NexraSubmissions.selectType('blog', this)">
+                        <i class="fa-solid fa-newspaper"></i>
+                        <strong>Tech Blog</strong>
+                        <p>An article, guide, or tutorial for the academy section.</p>
+                    </div>
+                </div>
+                <button class="sub-btn-next" id="sub-next-1" onclick="NexraSubmissions.goToStep(2)" disabled>Next <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+
+            <!-- STEP 2: DETAILS -->
+            <div id="sub-panel-2" class="sub-step-panel" style="display:none;">
+                <h2 class="tech-font sub-panel-title">Content Details</h2>
+                <div class="sub-form-grid">
+                    <div class="sub-field-group sub-full">
+                        <label class="sub-label">Title</label>
+                        <input type="text" id="sub-title" class="sub-input" placeholder="Enter a compelling title...">
+                    </div>
+                    <div class="sub-field-group">
+                        <label class="sub-label">Category</label>
+                        <select id="sub-category" class="sub-select">
+                            <option value="tools">Tools</option>
+                            <option value="templates">Templates</option>
+                            <option value="courses">Courses</option>
+                            <option value="guides">Guides</option>
+                            <option value="news">Tech News</option>
+                        </select>
+                    </div>
+                    <div class="sub-field-group">
+                        <label class="sub-label">Button Label</label>
+                        <input type="text" id="sub-btn-label" class="sub-input" placeholder="e.g. Download Free">
+                    </div>
+                    <div class="sub-field-group sub-full">
+                        <label class="sub-label">External Link / Download URL</label>
+                        <input type="url" id="sub-ext-link" class="sub-input" placeholder="https://example.com/resource">
+                    </div>
+                    <div class="sub-field-group sub-full">
+                        <label class="sub-label">Description (Rich Text)</label>
+                        <div class="sub-rich-toolbar">
+                            <button type="button" onclick="NexraSubmissions.richFormat('bold')"><b>B</b></button>
+                            <button type="button" onclick="NexraSubmissions.richFormat('italic')"><i>I</i></button>
+                            <button type="button" onclick="NexraSubmissions.richFormat('underline')"><u>U</u></button>
+                            <button type="button" onclick="NexraSubmissions.richFormat('insertUnorderedList')">• List</button>
+                        </div>
+                        <div id="sub-desc-editor" class="sub-rich-editor" contenteditable="true"></div>
+                    </div>
+                </div>
+                <div class="sub-panel-btns">
+                    <button class="sub-btn-back" onclick="NexraSubmissions.goToStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="sub-btn-next" onclick="NexraSubmissions.goToStep(3)">Next <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 3: MEDIA -->
+            <div id="sub-panel-3" class="sub-step-panel" style="display:none;">
+                <h2 class="tech-font sub-panel-title">Cover Image</h2>
+                <div class="sub-cover-upload" id="sub-cover-drop" onclick="document.getElementById('sub-cover-file').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>Click to upload cover image</p>
+                    <small>Watermark auto-applied via Canvas engine</small>
+                    <input type="file" id="sub-cover-file" accept="image/*" style="display:none;" onchange="NexraSubmissions.processCover(event)">
+                </div>
+                <div id="sub-cover-preview" class="sub-cover-preview" style="display:none;">
+                    <img id="sub-cover-img" src="" alt="Cover Preview">
+                    <button onclick="NexraSubmissions.removeCover()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="sub-panel-btns">
+                    <button class="sub-btn-back" onclick="NexraSubmissions.goToStep(2)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="sub-btn-next" onclick="NexraSubmissions.goToStep(4)">Review <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- STEP 4: PUBLISH -->
+            <div id="sub-panel-4" class="sub-step-panel" style="display:none;">
+                <h2 class="tech-font sub-panel-title">Review & Publish</h2>
+                <div id="sub-review-summary" class="sub-review-summary"></div>
+                <div class="sub-review-note">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Your submission will be reviewed by the Super Admin before going public. You'll be notified when approved.
+                </div>
+                <div class="sub-panel-btns">
+                    <button class="sub-btn-back" onclick="NexraSubmissions.goToStep(3)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button class="sub-btn-publish" id="sub-publish-btn" onclick="NexraSubmissions.publish()">
+                        <i class="fa-solid fa-rocket"></i> Submit for Review
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MY SUBMISSIONS TRACKER -->
+        <section class="sub-section">
+            <h2 class="tech-font sub-section-title"><i class="fa-solid fa-clock-rotate-left"></i> My Submissions</h2>
+            <div id="sub-submissions-grid" class="sub-submissions-grid">
+                <div class="skeleton" style="height:140px; border-radius:16px;"></div>
+                <div class="skeleton" style="height:140px; border-radius:16px;"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/reseller-submissions.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]).then(()=>NexraSubmissions.init()).catch(()=>NexraSubmissions.init());
+        })();
+    </script>
+</body>
+</html>

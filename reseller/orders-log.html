@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!-- NEXRA TECH PK — ORDERS LOG (reseller/orders-log.html) -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Orders Log | Nexra Partner</title>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#020202">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/reseller-orders.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+<body>
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+    <div id="ol-guard" class="ol-guard"><div class="ol-guard-icon"><i class="fa-solid fa-receipt fa-beat"></i></div><p class="tech-font">Loading Orders...</p></div>
+    <div id="ol-denied" class="ol-error-state" style="display:none;"><i class="fa-solid fa-ban"></i><h2 class="tech-font">Reseller Access Required</h2></div>
+
+    <main id="ol-main" class="ol-container" hidden role="main">
+
+        <!-- TOPBAR -->
+        <div class="ol-topbar">
+            <h1 class="tech-font ol-title"><i class="fa-solid fa-book-open" style="color:var(--brand-main);"></i> Orders Ledger</h1>
+            <button class="ol-btn-export" onclick="NexraOrdersLog.exportCSV()">
+                <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+        </div>
+
+        <!-- FILTER BAR -->
+        <div class="ol-filter-bar">
+            <div class="ol-search-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="ol-search" class="ol-search" placeholder="Search by name, phone, or order ID..." oninput="NexraOrdersLog.applyFilters()">
+            </div>
+            <select class="ol-filter-select" id="ol-status-filter" onchange="NexraOrdersLog.applyFilters()">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="refunded">Refunded</option>
+            </select>
+            <select class="ol-filter-select" id="ol-sort-by" onchange="NexraOrdersLog.applyFilters()">
+                <option value="date_desc">Newest First</option>
+                <option value="date_asc">Oldest First</option>
+                <option value="profit_desc">Highest Profit</option>
+            </select>
+        </div>
+
+        <!-- SUMMARY STRIP -->
+        <div class="ol-summary-strip" id="ol-summary-strip">
+            <div class="ol-summary-item"><span>Total Orders</span><strong id="ol-total-orders">0</strong></div>
+            <div class="ol-summary-item"><span>Total Revenue</span><strong id="ol-total-rev">Rs. 0</strong></div>
+            <div class="ol-summary-item"><span>Net Profit</span><strong id="ol-net-profit" style="color:var(--success);">Rs. 0</strong></div>
+        </div>
+
+        <!-- DESKTOP TABLE -->
+        <div class="ol-table-wrap" id="ol-table-wrap" style="display:none;">
+            <table class="ol-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Date</th>
+                        <th>Base Price</th>
+                        <th>Profit</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="ol-table-body"></tbody>
+            </table>
+        </div>
+
+        <!-- MOBILE CARD LIST -->
+        <div class="ol-card-list" id="ol-card-list">
+            <div class="skeleton" style="height:120px; border-radius:14px;"></div>
+            <div class="skeleton" style="height:120px; border-radius:14px; margin-top:12px;"></div>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div id="ol-empty" class="ol-empty-state" style="display:none;">
+            <i class="fa-solid fa-receipt"></i>
+            <h3>No orders yet</h3>
+            <p>Orders from your storefront will appear here in real-time.</p>
+        </div>
+    </main>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/reseller-orders.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]).then(()=>NexraOrdersLog.init()).catch(()=>NexraOrdersLog.init());
+        })();
+    </script>
+</body>
+</html>
