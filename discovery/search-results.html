@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — GLOBAL SEARCH RESULTS (discovery/search-results.html)
+  ============================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Search Results | Nexra Tech PK</title>
+    <meta name="description" content="Discover premium SaaS source codes, ui kits, and technical articles across the Nexra Tech PK ecosystem.">
+    <!-- Enterprise Marketing Meta -->
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Discover Ecosystem Assets | Nexra Tech PK">
+    <meta property="og:description" content="Search across thousands of verified SaaS tools and development resources.">
+    <meta property="og:type" content="website">
+    
+    <meta name="theme-color" content="#020202">
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/search-results.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+    
+    <!-- JSON-LD SearchResultsPage Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SearchResultsPage",
+      "name": "Global Ecosystem Search",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Nexra Tech PK"
+      }
+    }
+    </script>
+</head>
+<body data-theme="dark" class="search-theme">
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+
+    <main class="sr-container" role="main">
+        
+        <!-- Search Header -->
+        <div class="sr-header">
+            <h1 class="tech-font">Search Results</h1>
+            <p>Showing matches for: <span id="sr-query-text" style="color:#a855f7; font-weight:800;">"..."</span></p>
+            
+            <form class="sr-input-group" onsubmit="event.preventDefault(); NexraSearch.executeNewSearch();">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="sr-input" placeholder="Search SaaS, UI Kits, Articles..." autocomplete="off">
+                <button type="submit" class="sr-btn">Search</button>
+            </form>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="sr-tabs">
+            <button class="sr-tab active" data-filter="all" onclick="NexraSearch.switchTab('all')">All Results</button>
+            <button class="sr-tab" data-filter="products" onclick="NexraSearch.switchTab('products')">SaaS Tools <span class="sr-count" id="count-prod">0</span></button>
+            <button class="sr-tab" data-filter="blogs" onclick="NexraSearch.switchTab('blogs')">Articles <span class="sr-count" id="count-blog">0</span></button>
+            <button class="sr-tab" data-filter="freebies" onclick="NexraSearch.switchTab('freebies')">Freebies <span class="sr-count" id="count-free">0</span></button>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="sr-grid" id="sr-grid">
+            <!-- Loading Skeletons -->
+            <div class="sr-card skeleton"></div>
+            <div class="sr-card skeleton"></div>
+            <div class="sr-card skeleton"></div>
+            <div class="sr-card skeleton"></div>
+        </div>
+
+        <!-- Empty State (Hidden by default) -->
+        <div class="sr-empty" id="sr-empty" style="display:none;">
+            <i class="fa-solid fa-ghost"></i>
+            <h3>No Exact Matches Found</h3>
+            <p>Try adjusting your keywords or browsing our most popular categories.</p>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="sr-btn" onclick="window.location.href='/shop/shop.html'">Browse Shop</button>
+                <button class="sr-btn" style="background:transparent; border:1px solid #3f3f46;" onclick="window.location.href='/academy/blog.html'">Read Blog</button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/search-results.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]).then(()=>NexraSearch.init()).catch(()=>NexraSearch.init());
+        })();
+    </script>
+</body>
+</html>

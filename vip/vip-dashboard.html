@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — VIP DIAMOND HUB (vip-dashboard.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  SELF-CONTAINED Gated Premium Member Area.                          │
+  │  Global UI shell elements fetched at runtime from /components/.     │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #cart-mount     ← /components/cart-drawer.html                     │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - Strict Firestore Auth & Tier Guard (VIP/Diamond/Gold).            │
+  │  - Expiration Timestamp Verification & Animated SVG Ring.            │
+  │  - Real-time Telegram-Style Private Broadcast Feed (onSnapshot).    │
+  │  - No-Index SEO, Anti-Scraping, No-Select, No-Right-Click.          │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STRICT ENTERPRISE SECURITY & ANTI-SCRAPING
+         ════════════════════════════════════════════════════════════════ -->
+    <title>Diamond Hub | Nexra Tech PK</title>
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" id="meta-theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         PRECONNECT & FONTS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STYLESHEETS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/vip.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FIREBASE SDK & CONFIG
+         ════════════════════════════════════════════════════════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+
+    <!-- Anti-Scraping / No-Select / No-Right-Click -->
+    <style>
+        body.vip-protected {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+    <script>
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 'i' || e.key === 's')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</head>
+
+<body class="vip-protected">
+    <!-- TOAST & MOUNT POINTS -->
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="cart-mount"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FULL PAGE LOADER (Auth & Tier Guard State)
+         ════════════════════════════════════════════════════════════════ -->
+    <div id="vp-pre-guard" class="vp-pre-guard">
+        <div class="vp-guard-icon"><i class="fa-solid fa-gem fa-bounce"></i></div>
+        <p class="tech-font">Verifying Diamond Credentials...</p>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         MAIN VIP DASHBOARD
+         ════════════════════════════════════════════════════════════════ -->
+    <main id="vp-main" class="vp-container" role="main" hidden>
+        
+        <!-- HEADER OVERVIEW -->
+        <header class="vp-header">
+            <div class="vp-header-left">
+                <div class="vp-badge-glow"><i class="fa-solid fa-crown"></i> Elite Member</div>
+                <h1 class="tech-font vp-gold-text">Diamond Hub</h1>
+                <p>Exclusive broadcast feed, priority vault access, and premium multipliers.</p>
+            </div>
+            
+            <!-- SVG Circular Progress (Days Left) -->
+            <div class="vp-header-right">
+                <div class="vp-progress-ring-container">
+                    <svg class="vp-progress-ring" width="100" height="100">
+                        <circle class="vp-ring-bg" stroke-width="6" fill="transparent" r="44" cx="50" cy="50" />
+                        <circle class="vp-ring-fill" id="vp-ring-fill" stroke-width="6" fill="transparent" r="44" cx="50" cy="50" />
+                    </svg>
+                    <div class="vp-ring-text">
+                        <h4 id="vp-days-left" class="tech-font">--</h4>
+                        <span>Days</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary vp-btn-gold" onclick="window.location.href='/vip/vip-tiers.html'"><i class="fa-solid fa-rotate"></i> Renew</button>
+            </div>
+        </header>
+
+        <!-- VIP UTILITIES GRID -->
+        <div class="vp-utils-grid">
+            <div class="vp-util-card">
+                <i class="fa-solid fa-unlock-keyhole vp-icon-gold"></i>
+                <div>
+                    <h4>Direct Vault Bypass</h4>
+                    <p>Standard 3-share requirement waived. Instant downloads authorized.</p>
+                </div>
+            </div>
+            <div class="vp-util-card">
+                <i class="fa-solid fa-coins vp-icon-gold"></i>
+                <div>
+                    <h4>Coin Multiplier</h4>
+                    <p><strong id="vp-multiplier-text">2.5x</strong> bonus Nexra Coins awarded on every marketplace purchase.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             TELEGRAM-STYLE PRIVATE BROADCAST FEED
+             ════════════════════════════════════════════════════════════════ -->
+        <div class="vp-feed-wrapper">
+            <div class="vp-feed-header">
+                <h3><i class="fa-solid fa-satellite-dish fa-beat"></i> Live Broadcast Feed</h3>
+                <span class="vp-feed-status">Encrypted connection active</span>
+            </div>
+
+            <div class="vp-feed-chat" id="vp-feed-chat">
+                <!-- Skeleton Loaders -->
+                <div class="vp-bubble skeleton" style="width:70%; height:80px;"></div>
+                <div class="vp-bubble skeleton" style="width:50%; height:60px;"></div>
+                <div class="vp-bubble skeleton" style="width:85%; height:120px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PRIORITY SUPPORT FAB -->
+    <button class="vp-fab-support" onclick="NexraVIP.openPrioritySupport()" aria-label="Priority Support">
+        <i class="fa-solid fa-headset"></i>
+    </button>
+
+    <!-- MOUNTS -->
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <!-- SCRIPTS -->
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/vip.js"></script>
+
+    <!-- BOOT -->
+    <script>
+        (function NexraVIPBoot() {
+            'use strict';
+            const savedTheme = localStorage.getItem('nexra_theme');
+            if (savedTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            NexraComponents.load([
+                { file: '/components/header.html',      mount: '#header-mount'  },
+                { file: '/components/cart-drawer.html', mount: '#cart-mount'    },
+                { file: '/components/dock.html',        mount: '#dock-mount'    },
+                { file: '/components/footer.html',      mount: '#footer-mount'  }
+            ]).then(function () {
+                NexraVIP.init();
+            }).catch(function (err) {
+                console.error('Boot failed:', err);
+                if (window.NexraVIP) NexraVIP.init();
+            });
+        })();
+    </script>
+</body>
+</html>

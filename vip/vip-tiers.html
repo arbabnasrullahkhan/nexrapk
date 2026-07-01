@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — DIAMOND MEMBERSHIP & PRICING PLANS (vip-tiers.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  SELF-CONTAINED High-Conversion Pricing Portal.                     │
+  │  Global UI shell elements fetched at runtime from /components/.     │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #cart-mount     ← /components/cart-drawer.html                     │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - Dynamic Pricing Toggle (Monthly vs Lifetime).                    │
+  │  - Dynamic Data fetched directly from 'vip_tiers' Firestore.        │
+  │  - Encrypted Session Validation & Checkout Payload builder.         │
+  │  - JSON-LD AggregateOffer & Product Schema Injection.               │
+  │  - Real-time FOMO Ticker & Spot Counters.                           │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SEO, OPEN GRAPH & TWITTER CARDS
+         ════════════════════════════════════════════════════════════════ -->
+    <title>VIP Tiers & Diamond Membership | Nexra Tech PK</title>
+    <meta name="description" content="Upgrade to VIP, Gold, or Diamond membership. Unlock massive multipliers, direct vault access, and private broadcast feeds on Nexra Tech PK.">
+    <meta name="keywords" content="Nexra Tech VIP, Diamond Membership, Pro Subscription, Lifetime Deal, SaaS Membership, Pakistan">
+    <meta name="author" content="Nexra Tech PK">
+    <link rel="canonical" href="https://nexratech.pk/vip/vip-tiers.html">
+
+    <meta property="og:type" content="product">
+    <meta property="og:title" content="Unlock Diamond Membership | Nexra Tech PK">
+    <meta property="og:description" content="Join the elite tier. Get unlimited premium asset downloads, coin multipliers, and direct support.">
+    <meta property="og:url" content="https://nexratech.pk/vip/vip-tiers.html">
+    <meta property="og:image" content="https://nexratech.pk/assets/og-vip.jpg">
+    <meta property="og:site_name" content="Nexra Tech PK">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Unlock Diamond Membership">
+    <meta name="twitter:description" content="Secure your VIP tier and multiply your Nexra ecosystem advantages.">
+    <meta name="twitter:image" content="https://nexratech.pk/assets/twitter-vip.jpg">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" id="meta-theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         PRECONNECT & FONTS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STYLESHEETS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/vip-tiers.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FIREBASE SDK & CONFIG
+         ════════════════════════════════════════════════════════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+
+    <!-- Dynamic JSON-LD Mount -->
+    <script type="application/ld+json" id="vt-json-ld">{}</script>
+</head>
+
+<body>
+    <!-- TOAST & MOUNT POINTS -->
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="cart-mount"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FOMO TICKER (Recent Joins)
+         ════════════════════════════════════════════════════════════════ -->
+    <div class="vt-ticker-wrap">
+        <div class="vt-ticker-track" id="vt-ticker-track">
+            <!-- Simulated real-time joins injected by JS -->
+            <div class="vt-ticker-item"><i class="fa-solid fa-crown" style="color:#fbbf24;"></i> Loading recent upgrades...</div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         MAIN VIP TIERS LAYOUT
+         ════════════════════════════════════════════════════════════════ -->
+    <main id="vt-main" class="vt-container" role="main">
+        
+        <!-- HEADER & TOGGLE -->
+        <header class="vt-hero">
+            <div class="vt-hero-badge"><i class="fa-solid fa-gem"></i> Elite Ecosystem</div>
+            <h1 class="vt-hero-title tech-font">Unlock Your True Potential</h1>
+            <p class="vt-hero-subtitle">Gain unlimited vault access, massive coin multipliers, and enter the private Diamond Hub.</p>
+            
+            <!-- Dynamic Pricing Toggle -->
+            <div class="vt-toggle-wrap">
+                <div class="vt-toggle-bg">
+                    <div class="vt-toggle-slider" id="vt-toggle-slider"></div>
+                    <button class="vt-toggle-btn active" id="btn-monthly" onclick="NexraVIPTiers.switchBilling('monthly')">Monthly</button>
+                    <button class="vt-toggle-btn" id="btn-lifetime" onclick="NexraVIPTiers.switchBilling('lifetime')">Lifetime <span class="vt-save-badge">Save 60%</span></button>
+                </div>
+            </div>
+        </header>
+
+        <!-- PRICING GRID -->
+        <div class="vt-pricing-grid" id="vt-pricing-grid">
+            
+            <!-- Skeletons (x3) -->
+            <div class="vt-card skeleton" style="height:500px;"></div>
+            <div class="vt-card skeleton" style="height:540px; transform:scale(1.05);"></div>
+            <div class="vt-card skeleton" style="height:500px;"></div>
+
+        </div>
+        
+        <!-- SECURE BADGES -->
+        <div class="vt-trust-badges">
+            <div class="vt-trust-item"><i class="fa-solid fa-shield-halved"></i> 256-Bit SSL Secured</div>
+            <div class="vt-trust-item"><i class="fa-solid fa-rotate-left"></i> 7-Day Money Back</div>
+            <div class="vt-trust-item"><i class="fa-solid fa-bolt"></i> Instant Activation</div>
+        </div>
+
+    </main>
+
+    <!-- MOUNTS -->
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <!-- SCRIPTS -->
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/vip-tiers.js"></script>
+
+    <!-- BOOT -->
+    <script>
+        (function NexraVIPTiersBoot() {
+            'use strict';
+            const savedTheme = localStorage.getItem('nexra_theme');
+            if (savedTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            NexraComponents.load([
+                { file: '/components/header.html',      mount: '#header-mount'  },
+                { file: '/components/cart-drawer.html', mount: '#cart-mount'    },
+                { file: '/components/dock.html',        mount: '#dock-mount'    },
+                { file: '/components/footer.html',      mount: '#footer-mount'  }
+            ]).then(function () {
+                NexraVIPTiers.init();
+            }).catch(function (err) {
+                console.error('Boot failed:', err);
+                if (window.NexraVIPTiers) NexraVIPTiers.init();
+            });
+        })();
+    </script>
+</body>
+</html>

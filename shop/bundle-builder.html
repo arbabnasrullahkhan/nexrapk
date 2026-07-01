@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — SMART BUNDLE BUILDER (shop/bundle-builder.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  SELF-CONTAINED Smart Bundle & Discount Engine.                     │
+  │  Global UI shell elements fetched at runtime from /components/.     │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #cart-mount     ← /components/cart-drawer.html                     │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - Interactive Tap-to-Add/Remove interface.                         │
+  │  - Real-time math engine (Min 3 / Max 7 constraints).               │
+  │  - Animated progress bar & sticky bottom "Action Island".           │
+  │  - JSON-LD OfferCatalog Schema & strict Session Validation.         │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SEO, OPEN GRAPH & TWITTER CARDS
+         ════════════════════════════════════════════════════════════════ -->
+    <title>Smart Bundle Builder | Nexra Tech PK</title>
+    <meta name="description" content="Build your custom software bundle. Select 3-7 premium assets and instantly unlock up to a 20% massive discount.">
+    <meta name="keywords" content="Software Bundle, Discount, SaaS Bundle, Custom Package, Nexra Tech Deals">
+    <meta name="author" content="Nexra Tech PK">
+    <link rel="canonical" href="https://nexratech.pk/shop/bundle-builder.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Smart Bundle Builder | Nexra Tech PK">
+    <meta property="og:description" content="Build your custom digital bundle and save big. Min 3 items to unlock discounts.">
+    <meta property="og:url" content="https://nexratech.pk/shop/bundle-builder.html">
+    <meta property="og:image" content="https://nexratech.pk/assets/og-bundle.jpg">
+    <meta property="og:site_name" content="Nexra Tech PK">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Smart Bundle Builder">
+    <meta name="twitter:description" content="Create a custom software package and unlock massive discounts instantly.">
+    <meta name="twitter:image" content="https://nexratech.pk/assets/twitter-bundle.jpg">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" id="meta-theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         PRECONNECT & FONTS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STYLESHEETS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/bundle.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FIREBASE SDK & CONFIG
+         ════════════════════════════════════════════════════════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+
+    <!-- Dynamic JSON-LD Mount -->
+    <script type="application/ld+json" id="bd-json-ld">{}</script>
+</head>
+
+<body>
+    <!-- TOAST & MOUNT POINTS -->
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="cart-mount"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         MAIN BUNDLE BUILDER LAYOUT
+         ════════════════════════════════════════════════════════════════ -->
+    <main id="bd-main" class="bd-container" role="main">
+        
+        <!-- TOP: HERO & PROGRESS BAR -->
+        <header class="bd-hero">
+            <div class="bd-hero-badge"><i class="fa-solid fa-layer-group"></i> Smart Bundle Engine</div>
+            <h1 class="bd-hero-title tech-font">Build Your Custom Pack</h1>
+            <p class="bd-hero-subtitle">Select between 3 and 7 premium digital assets to unlock a massive 20% discount across your entire cart.</p>
+
+            <!-- Dynamic Progress Bar -->
+            <div class="bd-progress-wrap">
+                <div class="bd-progress-status">
+                    <span id="bd-status-text" class="tech-font">Add 3 items to unlock discount</span>
+                    <span id="bd-count-text">0 / 7</span>
+                </div>
+                <div class="bd-progress-bar-bg">
+                    <div class="bd-progress-fill" id="bd-progress-fill"></div>
+                    
+                    <!-- Milestone Markers -->
+                    <div class="bd-marker" style="left: 42.85%;"><i class="fa-solid fa-lock" id="bd-lock-icon"></i></div>
+                    <div class="bd-marker" style="left: 100%;">Max</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="bd-layout-grid">
+            
+            <!-- LEFT: AVAILABLE CATALOG POOL -->
+            <section class="bd-col-catalog">
+                <div class="bd-section-header">
+                    <h2 class="tech-font"><i class="fa-solid fa-store"></i> Master Catalog</h2>
+                    <span class="bd-hint">Tap an item to add</span>
+                </div>
+
+                <div class="bd-catalog-grid" id="bd-catalog-grid">
+                    <!-- Skeleton Loaders -->
+                    <div class="bd-prod-card skeleton" style="height:140px;"></div>
+                    <div class="bd-prod-card skeleton" style="height:140px;"></div>
+                    <div class="bd-prod-card skeleton" style="height:140px;"></div>
+                    <div class="bd-prod-card skeleton" style="height:140px;"></div>
+                </div>
+            </section>
+
+            <!-- RIGHT: BUNDLE BOX (My Selections) -->
+            <section class="bd-col-box">
+                <div class="bd-box-card">
+                    <div class="bd-section-header">
+                        <h2 class="tech-font"><i class="fa-solid fa-box-open"></i> My Bundle Box</h2>
+                        <span class="bd-hint" id="bd-box-count">0 Items</span>
+                    </div>
+
+                    <!-- Selected Items Container -->
+                    <div class="bd-selected-list" id="bd-selected-list">
+                        <!-- Empty State -->
+                        <div class="bd-empty-state" id="bd-empty-state">
+                            <i class="fa-solid fa-hand-pointer"></i>
+                            <p>Tap items from the catalog<br>to start building.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STICKY BOTTOM SHEET "ACTION ISLAND"
+         ════════════════════════════════════════════════════════════════ -->
+    <div class="bd-action-island" id="bd-action-island">
+        <div class="bd-action-content">
+            <div class="bd-math-panel">
+                <div class="bd-math-row">
+                    <span>Subtotal:</span>
+                    <span class="bd-original-price" id="bd-subtotal">Rs. 0</span>
+                </div>
+                <div class="bd-math-row bd-discount-row" id="bd-discount-row">
+                    <span>Bundle Discount (20%):</span>
+                    <span id="bd-discount-amt">- Rs. 0</span>
+                </div>
+                <div class="bd-math-row bd-total-row">
+                    <span>Grand Total:</span>
+                    <span class="bd-final-price" id="bd-grand-total">Rs. 0</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary bd-btn-checkout" id="bd-btn-checkout" onclick="NexraBundle.proceedToCheckout()" disabled>
+                <i class="fa-solid fa-lock"></i> Secure Bundle
+            </button>
+        </div>
+    </div>
+
+    <!-- MOUNTS -->
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <!-- SCRIPTS -->
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/bundle.js"></script>
+
+    <!-- BOOT -->
+    <script>
+        (function NexraBundleBoot() {
+            'use strict';
+            const savedTheme = localStorage.getItem('nexra_theme');
+            if (savedTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            NexraComponents.load([
+                { file: '/components/header.html',      mount: '#header-mount'  },
+                { file: '/components/cart-drawer.html', mount: '#cart-mount'    },
+                { file: '/components/dock.html',        mount: '#dock-mount'    },
+                { file: '/components/footer.html',      mount: '#footer-mount'  }
+            ]).then(function () {
+                NexraBundle.init();
+            }).catch(function (err) {
+                console.error('Boot failed:', err);
+                if (window.NexraBundle) NexraBundle.init();
+            });
+        })();
+    </script>
+</body>
+</html>

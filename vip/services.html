@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — VIP CONCIERGE & PREMIUM SERVICES (vip/services.html)
+  ============================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Strict Anti-Clickjacking Frame Buster -->
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>VIP Concierge | Nexra Tech PK</title>
+    <!-- Gated Gated Content Robots Directives -->
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#020202">
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="">
+    <link rel="apple-touch-icon" id="dynamic-apple-icon" href="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/vip-services.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+<body data-theme="dark" class="vip-theme">
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+
+    <!-- Tier Verification Guard -->
+    <div id="vip-guard" class="vip-guard">
+        <div class="vip-guard-ring"></div>
+        <i class="fa-solid fa-crown fa-beat" style="font-size:48px; color:#fbbf24; margin-bottom:20px; z-index:2; position:relative;"></i>
+        <h2 class="cinzel-font" style="color:#fff; z-index:2; position:relative; font-size:24px;">Authenticating VIP Status</h2>
+        <p style="color:#fbbf24; font-size:12px; letter-spacing:2px; text-transform:uppercase; z-index:2; position:relative;">Please wait</p>
+    </div>
+
+    <!-- MAIN UI -->
+    <main id="vip-main" class="vip-container" style="display:none;" role="main">
+        
+        <div class="vip-hero">
+            <div class="vh-badge">Diamond Concierge</div>
+            <h1 class="cinzel-font vh-title">Exclusive Done-For-You Services</h1>
+            <p class="vh-sub">Priority execution by elite Nexra engineers. Reserved exclusively for high-tier members.</p>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="vs-grid" id="vs-grid">
+            <!-- Loading Skeleton -->
+            <div class="vs-card skeleton"></div>
+            <div class="vs-card skeleton"></div>
+            <div class="vs-card skeleton"></div>
+        </div>
+    </main>
+
+    <!-- Request Service Modal -->
+    <div class="vip-modal-overlay" id="req-modal" style="display:none;">
+        <div class="vip-modal-card">
+            <button class="vm-close" onclick="NexraVIP.closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="vm-icon"><i class="fa-solid fa-gem"></i></div>
+            <h3 class="cinzel-font vm-title" id="vm-service-title">Request Service</h3>
+            <p class="vm-desc">Submit your requirements and a dedicated Account Manager will contact you within 2 hours.</p>
+            
+            <form id="req-form" onsubmit="event.preventDefault(); NexraVIP.submitRequest();">
+                <input type="hidden" id="vm-service-id">
+                <input type="hidden" id="vm-uid">
+                <input type="hidden" id="vm-tier">
+                
+                <div class="vm-field">
+                    <label>Your Instructions / Requirements</label>
+                    <textarea id="vm-instructions" class="vm-input" rows="4" required placeholder="Please describe exactly what you need built or configured..."></textarea>
+                </div>
+                
+                <button type="submit" class="vm-btn-submit" id="btn-submit-req">
+                    <i class="fa-solid fa-paper-plane"></i> Dispatch Priority Ticket
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/vip-services.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]).then(()=>NexraVIP.init()).catch(()=>NexraVIP.init());
+        })();
+    </script>
+</body>
+</html>

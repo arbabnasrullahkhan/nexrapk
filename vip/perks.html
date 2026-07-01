@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — VIP BENEFITS DEEP DIVE (vip/perks.html)
+  ============================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Diamond VIP Perks | Nexra Tech PK</title>
+    <meta name="description" content="Unlock lifetime discounts, priority APIs, and done-for-you concierge services with the Nexra Tech PK Diamond VIP Membership.">
+    <!-- Enterprise Marketing Meta -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://nexratech.pk/vip/perks.html">
+    <meta property="og:title" content="Unlock the Diamond VIP Vault | Nexra Tech PK">
+    <meta property="og:description" content="Join the elite 1% of SaaS agency owners. Lifetime discounts, priority support, and exclusive done-for-you services.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/assets/og-vip.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <meta name="theme-color" content="#020202">
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/vip-perks.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+    
+    <!-- JSON-LD Product/Offer Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "Diamond VIP Membership",
+      "description": "Exclusive access to premium SaaS tools, priority APIs, and concierge setup services.",
+      "brand": {
+        "@type": "Brand",
+        "name": "Nexra Tech PK"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://nexratech.pk/vip/perks.html",
+        "priceCurrency": "USD",
+        "price": "999.00",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
+</head>
+<body data-theme="dark" class="perks-theme">
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+
+    <main class="perks-main" role="main">
+        
+        <!-- Hero Section with Parallax Base -->
+        <section class="p-hero">
+            <div class="p-hero-glow"></div>
+            <div class="p-badge">The Elite 1%</div>
+            <h1 class="cinzel-font p-hero-title">Unlock The Vault</h1>
+            <p class="p-hero-sub">Priority infrastructure, exclusive templates, and a dedicated team of engineers at your fingertips.</p>
+            <button class="p-cta-btn" onclick="NexraVIPPerks.initiateUpgrade()"><i class="fa-solid fa-crown"></i> Claim Diamond Status</button>
+        </section>
+
+        <!-- Deep Dive: Vault Bypass -->
+        <section class="p-section p-parallax" id="sec-vault">
+            <div class="p-sec-content">
+                <i class="fa-solid fa-vault p-sec-icon"></i>
+                <h2 class="cinzel-font p-sec-title">Direct Vault Bypass</h2>
+                <p class="p-sec-desc">Skip the public queues. Get immediate access to beta features, unreleased APIs, and limited-edition SaaS source codes before they hit the market.</p>
+            </div>
+            <div class="p-sec-visual">
+                <div class="visual-glass">
+                    <div class="v-line" style="width:80%; background:#fbbf24;"></div>
+                    <div class="v-line" style="width:60%;"></div>
+                    <div class="v-line" style="width:90%;"></div>
+                    <div class="v-lock-icon"><i class="fa-solid fa-unlock-keyhole"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deep Dive: Priority Support -->
+        <section class="p-section p-reverse" id="sec-support">
+            <div class="p-sec-content">
+                <i class="fa-solid fa-headset p-sec-icon"></i>
+                <h2 class="cinzel-font p-sec-title">Priority Concierge</h2>
+                <p class="p-sec-desc">Standard tickets take 24-48 hours. Diamond members bypass the queue directly to Senior Engineers with a guaranteed 2-hour resolution SLA.</p>
+            </div>
+            <div class="p-sec-visual">
+                <div class="visual-glass chart-glass">
+                    <div class="bar-group">
+                        <span style="font-size:10px; color:#a1a1aa;">Standard</span>
+                        <div class="bar bar-slow">48h</div>
+                    </div>
+                    <div class="bar-group">
+                        <span style="font-size:10px; color:#fbbf24; font-weight:800;">Diamond</span>
+                        <div class="bar bar-fast">2h</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROI Calculator -->
+        <section class="p-section p-roi-section" id="sec-roi">
+            <div class="p-sec-content" style="text-align:center; width:100%; max-width:800px;">
+                <i class="fa-solid fa-calculator p-sec-icon"></i>
+                <h2 class="cinzel-font p-sec-title">Lifetime Discounts ROI</h2>
+                <p class="p-sec-desc">Drag the slider to calculate how much you will save monthly by applying the automatic 40% VIP discount to standard SaaS operations.</p>
+                
+                <div class="roi-calculator">
+                    <div class="roi-labels">
+                        <span>Monthly Spend ($)</span>
+                        <span id="roi-spend-val" style="color:#fff; font-weight:800;">$500</span>
+                    </div>
+                    <input type="range" id="roi-slider" min="100" max="5000" step="100" value="500" class="roi-range" oninput="NexraVIPPerks.calcROI()">
+                    
+                    <div class="roi-results">
+                        <div class="rr-box">
+                            <div class="rr-label">You Pay Only</div>
+                            <div class="rr-val" id="roi-pay">$300</div>
+                        </div>
+                        <div class="rr-box highlight">
+                            <div class="rr-label">Monthly Savings</div>
+                            <div class="rr-val" id="roi-save">$200</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sticky Footer CTA -->
+        <div class="p-sticky-footer">
+            <div class="sf-price">
+                <span class="sfp-title">Diamond Membership</span>
+                <span class="sfp-val">$999 <span style="font-size:12px; color:#a1a1aa; font-weight:400;">/ Lifetime</span></span>
+            </div>
+            <button class="p-cta-btn sf-btn" onclick="NexraVIPPerks.initiateUpgrade()">Upgrade Now</button>
+        </div>
+
+    </main>
+
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/vip-perks.js"></script>
+    <script>
+        (function(){
+            const t=localStorage.getItem('nexra_theme');
+            if(t==='dark')document.body.setAttribute('data-theme','dark');
+            NexraComponents.load([
+                {file:'/components/header.html',mount:'#header-mount'},
+                {file:'/components/dock.html',  mount:'#dock-mount'},
+                {file:'/components/footer.html',mount:'#footer-mount'}
+            ]);
+        })();
+    </script>
+</body>
+</html>
