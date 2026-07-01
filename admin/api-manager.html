@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — MASTER API & AI CONFIG HUB (admin/api-manager.html)
+  ============================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Strict Anti-Clickjacking Frame Buster -->
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Master API Vault | Nexra Tech PK Admin</title>
+    <!-- Maximum Security Robots Directives -->
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#020202">
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/admin-api.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+<body data-theme="dark" class="hacker-theme">
+    <div id="toast-container" aria-live="polite"></div>
+    
+    <!-- Custom Admin Minimal Header (we avoid global header for security isolation) -->
+    <header class="admin-top-bar">
+        <div class="atb-brand">
+            <i class="fa-solid fa-server" style="color:#10b981;"></i> 
+            <span class="tech-font">NEXRA<span style="color:#10b981;">VAULT</span></span>
+        </div>
+        <div class="atb-user">
+            <span id="admin-id-badge" class="badge-verifying">Verifying Identity...</span>
+        </div>
+    </header>
+
+    <!-- Hardcoded Auth Guard Layer -->
+    <div id="admin-guard" class="admin-guard">
+        <div class="guard-scanner"></div>
+        <i class="fa-solid fa-fingerprint fa-beat" style="font-size:64px; color:#10b981; margin-bottom:20px;"></i>
+        <h2 class="tech-font" style="color:#fff;">BIOMETRIC LOCK</h2>
+        <p style="color:#a1a1aa;">Verifying Super Admin Authorization Level 9...</p>
+    </div>
+
+    <!-- MAIN VAULT UI -->
+    <main id="admin-main" class="admin-container" style="display:none;" role="main">
+        
+        <div class="admin-header">
+            <h1 class="tech-font"><i class="fa-solid fa-microchip"></i> API & AI Intelligence Core</h1>
+            <p>Manage external brain connections and payment hooks. Keys are masked and encrypted.</p>
+        </div>
+
+        <div class="vault-grid">
+            
+            <!-- OPENROUTER AI -->
+            <div class="vault-card">
+                <div class="vc-header">
+                    <div class="vc-title"><i class="fa-solid fa-brain" style="color:#a855f7;"></i> OpenRouter AI Engine</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-openrouter" onchange="NexraAPI.toggleModel('openrouter', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="vc-body">
+                    <div class="input-group">
+                        <label>Secret API Key</label>
+                        <div class="pwd-wrapper">
+                            <input type="password" id="key-openrouter" class="vault-input blurred-input" placeholder="sk-or-v1-xxxxxxxxxxxxxxxxx">
+                            <i class="fa-solid fa-eye eye-toggle" onclick="NexraAPI.toggleVisibility('key-openrouter', this)"></i>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Default Chat Model</label>
+                        <select id="model-openrouter" class="vault-input">
+                            <option value="google/gemini-pro">Google Gemini Pro (via OR)</option>
+                            <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+                            <option value="meta-llama/llama-3-8b-instruct">Llama 3 8B</option>
+                        </select>
+                    </div>
+                    <div class="vc-actions">
+                        <button class="v-btn v-btn-test" onclick="NexraAPI.testConnection('openrouter')"><i class="fa-solid fa-satellite-dish"></i> Test</button>
+                        <button class="v-btn v-btn-save" onclick="NexraAPI.saveKey('openrouter')"><i class="fa-solid fa-floppy-disk"></i> Save Key</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GOOGLE GEMINI NATIVE -->
+            <div class="vault-card">
+                <div class="vc-header">
+                    <div class="vc-title"><i class="fa-brands fa-google" style="color:#3b82f6;"></i> Native Gemini API</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-gemini" onchange="NexraAPI.toggleModel('gemini', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="vc-body">
+                    <div class="input-group">
+                        <label>Secret API Key</label>
+                        <div class="pwd-wrapper">
+                            <input type="password" id="key-gemini" class="vault-input blurred-input" placeholder="AIzaSyxxxxxxxxxxxxxxxx">
+                            <i class="fa-solid fa-eye eye-toggle" onclick="NexraAPI.toggleVisibility('key-gemini', this)"></i>
+                        </div>
+                    </div>
+                    <div class="vc-actions" style="margin-top:auto;">
+                        <button class="v-btn v-btn-test" onclick="NexraAPI.testConnection('gemini')"><i class="fa-solid fa-satellite-dish"></i> Test</button>
+                        <button class="v-btn v-btn-save" onclick="NexraAPI.saveKey('gemini')"><i class="fa-solid fa-floppy-disk"></i> Save Key</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COHERE NATIVE -->
+            <div class="vault-card">
+                <div class="vc-header">
+                    <div class="vc-title"><i class="fa-solid fa-cube" style="color:#10b981;"></i> Cohere API (Embeddings)</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-cohere" onchange="NexraAPI.toggleModel('cohere', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="vc-body">
+                    <div class="input-group">
+                        <label>Secret API Key</label>
+                        <div class="pwd-wrapper">
+                            <input type="password" id="key-cohere" class="vault-input blurred-input" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxx">
+                            <i class="fa-solid fa-eye eye-toggle" onclick="NexraAPI.toggleVisibility('key-cohere', this)"></i>
+                        </div>
+                    </div>
+                    <div class="vc-actions" style="margin-top:auto;">
+                        <button class="v-btn v-btn-test" onclick="NexraAPI.testConnection('cohere')"><i class="fa-solid fa-satellite-dish"></i> Test</button>
+                        <button class="v-btn v-btn-save" onclick="NexraAPI.saveKey('cohere')"><i class="fa-solid fa-floppy-disk"></i> Save Key</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAYMENT GATEWAY -->
+            <div class="vault-card" style="border-color:rgba(245, 158, 11, 0.4);">
+                <div class="vc-header">
+                    <div class="vc-title"><i class="fa-solid fa-credit-card" style="color:#f59e0b;"></i> Payment Processor (Stripe/PayFast)</div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-payments" checked disabled title="Payments cannot be disabled">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="vc-body">
+                    <div class="input-group">
+                        <label>Publishable Key</label>
+                        <input type="text" id="key-pay-pub" class="vault-input" placeholder="pk_live_xxxxxxxxxxxxxxxx">
+                    </div>
+                    <div class="input-group">
+                        <label>Secret Key (High Risk)</label>
+                        <div class="pwd-wrapper">
+                            <input type="password" id="key-pay-sec" class="vault-input blurred-input" placeholder="sk_live_xxxxxxxxxxxxxxxx" style="color:#ef4444;">
+                            <i class="fa-solid fa-eye eye-toggle" onclick="NexraAPI.toggleVisibility('key-pay-sec', this)"></i>
+                        </div>
+                    </div>
+                    <div class="vc-actions">
+                        <button class="v-btn v-btn-save" onclick="NexraAPI.savePaymentKeys()" style="width:100%;"><i class="fa-solid fa-lock"></i> Commit Secure Payload</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/admin-api.js"></script>
+</body>
+</html>

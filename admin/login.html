@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nexra Admin — Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --brand: #FF4A17;
+            --glow:  rgba(255,74,23,0.3);
+            --bg:    #020202;
+            --surf:  #0a0a0a;
+            --bdr:   rgba(255,255,255,0.07);
+            --t1:    #ffffff;
+            --t2:    #a1a1aa;
+            --t3:    #52525b;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: var(--bg); color: var(--t1);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh; display: flex; align-items: center;
+            justify-content: center; overflow: hidden; position: relative;
+        }
+
+        /* Background Glow */
+        .bg-glow {
+            position: fixed; width: 70vw; height: 70vw;
+            max-width: 600px; max-height: 600px;
+            background: var(--brand); filter: blur(180px);
+            opacity: 0.08; border-radius: 50%;
+            animation: pGlow 6s ease-in-out infinite alternate;
+            pointer-events: none; z-index: 0;
+        }
+        @keyframes pGlow {
+            0%   { opacity: 0.06; transform: scale(0.88); }
+            100% { opacity: 0.14; transform: scale(1.12); }
+        }
+
+        /* Card */
+        .login-card {
+            position: relative; z-index: 2;
+            width: 420px; max-width: 95vw;
+            background: var(--surf); border: 1px solid var(--bdr);
+            border-radius: 28px; padding: 44px 38px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+        }
+
+        /* Logo */
+        .login-logo {
+            display: flex; flex-direction: column; align-items: center;
+            margin-bottom: 36px;
+        }
+        .logo-icon {
+            width: 64px; height: 64px; border-radius: 20px;
+            background: var(--bg); border: 1px solid var(--bdr);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 14px;
+            box-shadow: 0 0 40px var(--glow);
+        }
+        .logo-icon img { width: 44px; height: 44px; object-fit: contain; }
+        .logo-title { font-family: 'Space Grotesk'; font-size: 11px; font-weight: 800; color: var(--t3); letter-spacing: 3px; text-transform: uppercase; }
+        .login-heading { font-family: 'Space Grotesk'; font-size: 24px; font-weight: 900; text-align: center; margin-bottom: 6px; }
+        .login-sub { font-size: 13px; color: var(--t2); text-align: center; margin-bottom: 32px; }
+
+        /* Form */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 11px; font-weight: 700; color: var(--t2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+        .form-input {
+            width: 100%; background: var(--bg);
+            border: 1.5px solid var(--bdr); border-radius: 12px;
+            padding: 14px 16px; color: var(--t1);
+            font-family: inherit; font-size: 14px; outline: none; transition: 0.25s;
+        }
+        .form-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(255,74,23,0.12); }
+
+        .login-btn {
+            width: 100%; padding: 16px; border-radius: 50px; border: none;
+            background: var(--brand); color: #fff; font-family: inherit;
+            font-size: 14px; font-weight: 800; cursor: pointer;
+            margin-top: 8px; transition: 0.25s;
+            box-shadow: 0 8px 24px var(--glow);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .login-btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
+        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .err-msg {
+            background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+            color: #ef4444; font-size: 12px; font-weight: 700;
+            padding: 10px 16px; border-radius: 10px; margin-bottom: 16px;
+            display: none; align-items: center; gap: 8px;
+        }
+        .err-msg.show { display: flex; }
+
+        .login-footer { text-align: center; margin-top: 28px; font-size: 11px; color: var(--t3); }
+        .login-footer strong { color: var(--brand); }
+
+        /* Secure badge */
+        .secure-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(16,185,129,0.1); color: #10b981;
+            padding: 6px 14px; border-radius: 50px; font-size: 10px;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            border: 1px solid rgba(16,185,129,0.2); margin: 0 auto 28px;
+            display: flex; width: fit-content;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="logo-icon">
+                <img id="admin-logo" src="/firebaseconfig.js" alt="Nexra Logo">
+            </div>
+            <div class="logo-title">Admin Portal</div>
+        </div>
+
+        <h1 class="login-heading">Secure Access</h1>
+        <p class="login-sub">Enter your administrator credentials to continue.</p>
+
+        <div class="secure-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            256-BIT ENCRYPTED SESSION
+        </div>
+
+        <div class="err-msg" id="err-msg">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span id="err-text">Invalid credentials. Try again.</span>
+        </div>
+
+        <form id="login-form" onsubmit="AdminLogin.handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label" for="adm-email">Email Address</label>
+                <input class="form-input" id="adm-email" type="email" placeholder="admin@nexratech.pk" required autocomplete="email"/>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="adm-password">Password</label>
+                <input class="form-input" id="adm-password" type="password" placeholder="••••••••••" required autocomplete="current-password"/>
+            </div>
+            <button class="login-btn" type="submit" id="login-btn">
+                <i class="fa-solid fa-unlock-keyhole"></i>
+                <span id="login-btn-text">ACCESS PANEL</span>
+            </button>
+        </form>
+
+        <div class="login-footer">
+            Restricted to <strong>Nexra Tech PK</strong> administrators only.<br>
+            Unauthorized access attempts are logged.
+        </div>
+    </div>
+
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+
+    <script>
+        window.AdminLogin = {
+            handleLogin: async function(e) {
+                e.preventDefault();
+                const email = document.getElementById('adm-email').value;
+                const pass  = document.getElementById('adm-password').value;
+                const btn   = document.getElementById('login-btn');
+                const btnTxt= document.getElementById('login-btn-text');
+                const errEl = document.getElementById('err-msg');
+                const errTxt= document.getElementById('err-text');
+
+                btn.disabled = true;
+                btnTxt.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AUTHENTICATING...';
+                errEl.classList.remove('show');
+
+                if (window.auth) {
+                    try {
+                        await window.auth.signInWithEmailAndPassword(email, pass);
+                        btnTxt.innerHTML = '<i class="fa-solid fa-check"></i> WELCOME BACK!';
+                        setTimeout(() => window.location.href = '/admin/index.html', 600);
+                    } catch(err) {
+                        errTxt.innerText = err.message || 'Authentication failed.';
+                        errEl.classList.add('show');
+                        btn.disabled = false;
+                        btnTxt.innerHTML = '<i class="fa-solid fa-unlock-keyhole"></i> ACCESS PANEL';
+                    }
+                } else {
+                    // Offline fallback (dev mode)
+                    if (email === 'admin@nexratech.pk' && pass === 'admin123') {
+                        localStorage.setItem('nexra_admin_authed', '1');
+                        window.location.href = '/admin/index.html';
+                    } else {
+                        errTxt.innerText = 'Invalid credentials.';
+                        errEl.classList.add('show');
+                        btn.disabled = false;
+                        btnTxt.innerHTML = '<i class="fa-solid fa-unlock-keyhole"></i> ACCESS PANEL';
+                    }
+                }
+            }
+        };
+
+        // Apply branding once firebaseconfig.js loads
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.NexraBrand) {
+                const logo = document.getElementById('admin-logo');
+                if (logo) logo.src = window.NexraBrand.getAsset('logo');
+            }
+        });
+    </script>
+
+</body>
+</html>

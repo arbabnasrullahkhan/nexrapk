@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — SUPER ADMIN ADS MANAGER (admin/ads-manager.html)
+  ============================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Ads Manager | Nexra Admin</title>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="theme-color" content="#020202">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/admin-ads.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+<body data-theme="dark">
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="header-mount"></div>
+
+    <div id="adm-guard" class="adm-guard"><div class="adm-guard-icon"><i class="fa-solid fa-shield-halved fa-beat"></i></div><p class="tech-font">Verifying Admin Privileges...</p></div>
+    <div id="adm-denied" class="adm-error-state" style="display:none;"><i class="fa-solid fa-ban"></i><h2 class="tech-font">Super Admin Access Required</h2></div>
+
+    <main id="adm-main" class="adm-container" hidden role="main">
+
+        <!-- HEADER -->
+        <div class="adm-header">
+            <div>
+                <h1 class="tech-font adm-title"><i class="fa-solid fa-bullseye" style="color:var(--brand-main);"></i> Promotion Engine</h1>
+                <p class="adm-sub">Manage boost plans, approve campaigns, and monitor ad revenue.</p>
+            </div>
+            <button class="adm-btn-primary" onclick="NexraAdminAds.openPlanCreator()">
+                <i class="fa-solid fa-plus"></i> New Boost Plan
+            </button>
+        </div>
+
+        <!-- REVENUE & ANALYTICS -->
+        <div class="adm-kpi-grid">
+            <div class="adm-kpi-card">
+                <div class="adm-kpi-icon" style="color:#10b981;"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+                <div class="adm-kpi-value" id="adm-total-rev">Rs. 0</div>
+                <div class="adm-kpi-label">Total Ad Revenue</div>
+            </div>
+            <div class="adm-kpi-card">
+                <div class="adm-kpi-icon" style="color:var(--brand-main);"><i class="fa-solid fa-rocket"></i></div>
+                <div class="adm-kpi-value" id="adm-active-camp">0</div>
+                <div class="adm-kpi-label">Active Campaigns</div>
+            </div>
+            <div class="adm-kpi-card">
+                <div class="adm-kpi-icon" style="color:#f59e0b;"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="adm-kpi-value" id="adm-pending-camp">0</div>
+                <div class="adm-kpi-label">Pending Approvals</div>
+            </div>
+        </div>
+
+        <div class="adm-grid-2col">
+            <!-- PENDING APPROVALS PIPELINE -->
+            <div class="adm-panel">
+                <h2 class="tech-font adm-panel-title"><i class="fa-solid fa-list-check"></i> Approval Pipeline</h2>
+                <div id="adm-pending-list" class="adm-list-container">
+                    <div class="skeleton" style="height:80px; border-radius:12px;"></div>
+                </div>
+            </div>
+
+            <!-- ACTIVE BOOST PLANS -->
+            <div class="adm-panel">
+                <h2 class="tech-font adm-panel-title"><i class="fa-solid fa-tags"></i> Boost Plans (Pricing)</h2>
+                <div id="adm-plans-list" class="adm-list-container">
+                    <div class="skeleton" style="height:80px; border-radius:12px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GLOBAL PLACEMENT CONTROL & AUDIT LOG -->
+        <div class="adm-panel" style="margin-top:24px;">
+            <h2 class="tech-font adm-panel-title"><i class="fa-solid fa-table-list"></i> Active Campaigns & Placements</h2>
+            <div class="adm-table-wrap">
+                <table class="adm-table">
+                    <thead>
+                        <tr>
+                            <th>Campaign ID</th>
+                            <th>Reseller</th>
+                            <th>Product</th>
+                            <th>Status / Expiry</th>
+                            <th>Placement</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adm-active-table-body">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- PLAN CREATOR MODAL -->
+    <div class="adm-modal-overlay" id="adm-plan-modal" style="display:none;" onclick="NexraAdminAds.closeModal(event, 'adm-plan-modal')">
+        <div class="adm-modal-card">
+            <h3 class="tech-font"><i class="fa-solid fa-pen-to-square"></i> Configure Boost Plan</h3>
+            <div class="adm-field">
+                <label>Plan Name</label>
+                <input type="text" id="adm-plan-name" class="adm-input" placeholder="e.g. 24-Hour Hot Product">
+            </div>
+            <div class="adm-field-row">
+                <div class="adm-field">
+                    <label>Duration (Hours)</label>
+                    <input type="number" id="adm-plan-duration" class="adm-input" min="1" placeholder="e.g. 24">
+                </div>
+                <div class="adm-field">
+                    <label>Price (PKR)</label>
+                    <input type="number" id="adm-plan-price" class="adm-input" min="0" placeholder="e.g. 500">
+                </div>
+            </div>
+            <div class="adm-field">
+                <label>Badge Type</label>
+                <select id="adm-plan-badge" class="adm-select">
+                    <option value="Sponsored">Sponsored</option>
+                    <option value="Hot Product">Hot Product</option>
+                    <option value="Top Pick">Top Pick</option>
+                </select>
+            </div>
+            <div class="adm-field" style="flex-direction:row; align-items:center; gap:10px;">
+                <input type="checkbox" id="adm-plan-active" checked>
+                <label for="adm-plan-active" style="margin:0;">Plan is Active</label>
+            </div>
+            <div class="adm-modal-actions">
+                <button class="adm-btn-cancel" onclick="NexraAdminAds.closeModal(null, 'adm-plan-modal')">Cancel</button>
+                <button class="adm-btn-primary" onclick="NexraAdminAds.savePlan()">Save Plan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROOF REVIEW MODAL -->
+    <div class="adm-modal-overlay" id="adm-review-modal" style="display:none;" onclick="NexraAdminAds.closeModal(event, 'adm-review-modal')">
+        <div class="adm-modal-card" style="max-width:500px;">
+            <h3 class="tech-font"><i class="fa-solid fa-magnifying-glass"></i> Review Payment Proof</h3>
+            <div class="adm-review-details" id="adm-review-details"></div>
+            <div class="adm-proof-container">
+                <img id="adm-proof-img" src="" alt="Payment Proof" style="width:100%; border-radius:12px; border:1px solid #333;">
+            </div>
+            <div class="adm-modal-actions" style="margin-top:20px;">
+                <button class="adm-btn-danger" onclick="NexraAdminAds.processCampaign('rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
+                <button class="adm-btn-success" onclick="NexraAdminAds.processCampaign('approved')"><i class="fa-solid fa-check"></i> Approve & Activate</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/admin-ads.js"></script>
+    <script>
+        NexraComponents.load([
+            {file:'/components/header.html',mount:'#header-mount'}
+        ]).then(()=>NexraAdminAds.init()).catch(()=>NexraAdminAds.init());
+    </script>
+</body>
+</html>

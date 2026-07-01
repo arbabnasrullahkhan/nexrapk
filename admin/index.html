@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nexra Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<!-- =========================================================================
+     ADMIN LAYOUT
+     ========================================================================= -->
+<div class="adm-layout">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="adm-sidebar" id="adm-sidebar">
+        <!-- Logo -->
+        <div class="adm-sidebar-logo">
+            <img id="adm-logo-img" src="" alt="Nexra" style="height:26px; filter:brightness(1) invert(1) saturate(1);">
+            <div class="adm-sidebar-title">Nexra Admin</div>
+            <div class="adm-sidebar-badge"><i class="fa-solid fa-shield-halved"></i> SECURE PANEL</div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="adm-nav-group">
+            <span class="adm-nav-label">Overview</span>
+            <div class="adm-nav-item active" data-page="dashboard" onclick="NexraAdmin.showPage('dashboard')">
+                <i class="fa-solid fa-gauge-high"></i> Dashboard
+            </div>
+        </div>
+
+        <div class="adm-nav-group">
+            <span class="adm-nav-label">Content</span>
+            <div class="adm-nav-item" data-page="branding" onclick="NexraAdmin.showPage('branding')">
+                <i class="fa-solid fa-palette"></i> Branding & Theme
+            </div>
+            <div class="adm-nav-item" data-page="announce" onclick="NexraAdmin.showPage('announce')">
+                <i class="fa-solid fa-bullhorn"></i> Announcement Bar
+            </div>
+            <div class="adm-nav-item" data-page="products" onclick="NexraAdmin.showPage('products')">
+                <i class="fa-solid fa-box-archive"></i> Products
+                <span class="badge" id="nav-products-count">0</span>
+            </div>
+        </div>
+
+        <div class="adm-nav-group">
+            <span class="adm-nav-label">Commerce</span>
+            <div class="adm-nav-item" data-page="orders" onclick="NexraAdmin.showPage('orders')">
+                <i class="fa-solid fa-bag-shopping"></i> Orders
+                <span class="badge" style="background:var(--adm-warning);" id="nav-orders-count">0</span>
+            </div>
+        </div>
+
+        <div class="adm-nav-group" style="margin-top:auto;">
+            <span class="adm-nav-label">System</span>
+            <div class="adm-nav-item" onclick="window.open('/home.html','_blank')">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> View Live Site
+            </div>
+            <div class="adm-nav-item" onclick="NexraAdmin.signOut()" style="color:var(--adm-danger);">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar mobile backdrop -->
+    <div class="adm-sidebar-backdrop" id="adm-backdrop" onclick="NexraAdmin.closeSidebar()"></div>
+
+    <!-- ── MAIN CONTENT AREA ── -->
+    <div class="adm-content">
+
+        <!-- TOP BAR -->
+        <header class="adm-topbar">
+            <div class="adm-topbar-left">
+                <button class="adm-btn adm-btn-ghost adm-menu-toggle" onclick="NexraAdmin.toggleSidebar()" style="padding:10px 12px; border-radius:12px;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="adm-topbar-title" id="adm-topbar-title">Dashboard</div>
+            </div>
+            <div class="adm-topbar-right">
+                <div style="font-size:12px; color:var(--adm-text-2); font-weight:600;" id="adm-user-email"></div>
+                <div class="adm-avatar" id="adm-avatar" title="Signed in">A</div>
+            </div>
+        </header>
+
+        <!-- ================================================================
+             PAGE: DASHBOARD
+             ================================================================ -->
+        <section class="adm-page active" id="page-dashboard">
+
+            <!-- Stat Cards -->
+            <div class="adm-stat-grid">
+                <div class="adm-stat-card">
+                    <div class="adm-stat-glow" style="background:#FF4A17;"></div>
+                    <div class="adm-stat-icon" style="background:rgba(255,74,23,0.12); color:#FF4A17;">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+                    <div class="adm-stat-val" id="stat-orders">—</div>
+                    <div class="adm-stat-label">Total Orders</div>
+                    <div class="adm-stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Live from Firestore</div>
+                </div>
+                <div class="adm-stat-card">
+                    <div class="adm-stat-glow" style="background:#10b981;"></div>
+                    <div class="adm-stat-icon" style="background:rgba(16,185,129,0.12); color:#10b981;">
+                        <i class="fa-solid fa-box-archive"></i>
+                    </div>
+                    <div class="adm-stat-val" id="stat-products">—</div>
+                    <div class="adm-stat-label">Products Listed</div>
+                    <div class="adm-stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Active</div>
+                </div>
+                <div class="adm-stat-card">
+                    <div class="adm-stat-glow" style="background:#3b82f6;"></div>
+                    <div class="adm-stat-icon" style="background:rgba(59,130,246,0.12); color:#3b82f6;">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="adm-stat-val">1,700+</div>
+                    <div class="adm-stat-label">Total Users</div>
+                    <div class="adm-stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Growing</div>
+                </div>
+                <div class="adm-stat-card">
+                    <div class="adm-stat-glow" style="background:#f59e0b;"></div>
+                    <div class="adm-stat-icon" style="background:rgba(245,158,11,0.12); color:#f59e0b;">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                    <div class="adm-stat-val">99.9%</div>
+                    <div class="adm-stat-label">Satisfaction Rate</div>
+                    <div class="adm-stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Excellent</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="adm-card">
+                <div class="adm-card-header">
+                    <div class="adm-card-title"><i class="fa-solid fa-bolt"></i> Quick Actions</div>
+                </div>
+                <div class="adm-card-body">
+                    <div class="adm-quick-grid">
+                        <div class="adm-quick-btn" onclick="NexraAdmin.showPage('products'); NexraAdmin.openProductModal()">
+                            <i class="fa-solid fa-plus-circle"></i>
+                            <span>Add Product</span>
+                        </div>
+                        <div class="adm-quick-btn" onclick="NexraAdmin.showPage('branding')">
+                            <i class="fa-solid fa-palette"></i>
+                            <span>Edit Branding</span>
+                        </div>
+                        <div class="adm-quick-btn" onclick="NexraAdmin.showPage('announce')">
+                            <i class="fa-solid fa-bullhorn"></i>
+                            <span>Update Banner</span>
+                        </div>
+                        <div class="adm-quick-btn" onclick="NexraAdmin.showPage('orders')">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                            <span>View Orders</span>
+                        </div>
+                        <div class="adm-quick-btn" onclick="window.open('/home.html','_blank')">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Preview Site</span>
+                        </div>
+                        <div class="adm-quick-btn" onclick="NexraAdmin.signOut()">
+                            <i class="fa-solid fa-right-from-bracket" style="color:var(--adm-danger)!important;"></i>
+                            <span>Sign Out</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="adm-card">
+                <div class="adm-card-header">
+                    <div class="adm-card-title"><i class="fa-solid fa-server"></i> System Status</div>
+                </div>
+                <div class="adm-card-body" style="display:flex; flex-direction:column; gap:14px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <span style="font-size:13px; font-weight:600; color:var(--adm-text-2);">Firebase Firestore</span>
+                        <span class="adm-status adm-status-success" id="firebase-status"><i class="fa-solid fa-circle"></i> Connected</span>
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <span style="font-size:13px; font-weight:600; color:var(--adm-text-2);">Auth Provider</span>
+                        <span class="adm-status adm-status-success"><i class="fa-solid fa-circle"></i> Firebase Auth</span>
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <span style="font-size:13px; font-weight:600; color:var(--adm-text-2);">Hosting Platform</span>
+                        <span class="adm-status adm-status-info"><i class="fa-brands fa-github"></i> Vercel / GitHub</span>
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <span style="font-size:13px; font-weight:600; color:var(--adm-text-2);">Admin Panel Version</span>
+                        <span class="adm-status adm-status-warning">v2.0.0</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================
+             PAGE: BRANDING
+             ================================================================ -->
+        <section class="adm-page" id="page-branding">
+
+            <div class="adm-card">
+                <div class="adm-card-header">
+                    <div class="adm-card-title"><i class="fa-solid fa-image"></i> Logo & Favicon Preview</div>
+                    <span style="font-size:12px; color:var(--adm-text-3);">Updates via Edition switch</span>
+                </div>
+                <div class="adm-card-body" style="display:flex; align-items:center; gap:28px; flex-wrap:wrap;">
+                    <div style="text-align:center;">
+                        <img id="branding-logo-preview" src="" alt="Current Logo"
+                            style="width:80px; height:80px; border-radius:20px; object-fit:contain; background:var(--adm-surface); border:1px solid var(--adm-border); padding:10px;">
+                        <div style="font-size:11px; color:var(--adm-text-3); margin-top:8px; font-weight:700;">CURRENT LOGO</div>
+                    </div>
+                    <div>
+                        <p style="font-size:13px; color:var(--adm-text-2); margin-bottom:12px; max-width:380px;">
+                            Logo, favicon, and watermark are tied to the <strong style="color:var(--adm-text-1);">active Edition</strong>. Switch edition below to change all brand assets instantly across every page.
+                        </p>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <span style="font-size:12px; font-weight:700; color:var(--adm-text-3);">EDITION:</span>
+                            <div class="adm-swatch selected" data-edition="beta" style="background:#FF4A17;" onclick="NexraAdmin.selectEdition('beta',this)" title="Beta — Orange"></div>
+                            <div class="adm-swatch" data-edition="alpha" style="background:#a855f7;" onclick="NexraAdmin.selectEdition('alpha',this)" title="Alpha — Purple"></div>
+                        </div>
+                        <input type="hidden" id="branding-activeEdition" value="beta">
+                    </div>
+                </div>
+            </div>
+
+            <div class="adm-card">
+                <div class="adm-card-header">
+                    <div class="adm-card-title"><i class="fa-solid fa-sliders"></i> Site Settings</div>
+                </div>
+                <div class="adm-card-body">
+                    <div class="adm-form-grid">
+                        <div class="adm-form-group">
+                            <label class="adm-form-label" for="branding-siteTitle">Site Title (Browser Tab)</label>
+                            <input class="adm-input" id="branding-siteTitle" type="text" placeholder="Nexra Tech PK — Digital Ecosystem">
+                        </div>
+                        <div class="adm-form-group">
+                            <label class="adm-form-label" for="branding-metaDescription">Meta Description</label>
+                            <input class="adm-input" id="branding-metaDescription" type="text" placeholder="Pakistan's most trusted digital marketplace...">
+                        </div>
+                    </div>
+                    <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
+                        <button class="adm-btn adm-btn-primary" onclick="NexraAdmin.saveBranding()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> SAVE & GO LIVE
+                        </button>
+                        <button class="adm-btn adm-btn-ghost" onclick="NexraAdmin.loadBranding()">
+                            <i class="fa-solid fa-rotate"></i> RELOAD
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================
+             PAGE: ANNOUNCEMENT
+             ================================================================ -->
+        <section class="adm-page" id="page-announce">
+
+            <div class="adm-card">
+                <div class="adm-card-header">
+                    <div class="adm-card-title"><i class="fa-solid fa-bullhorn"></i> Announcement Bar</div>
+                    <span style="font-size:12px; color:var(--adm-success); font-weight:700;">
+                        <i class="fa-solid fa-circle"></i> Live via Firestore
+                    </span>
+                </div>
+                <div class="adm-card-body">
+                    <p style="font-size:13px; color:var(--adm-text-2); margin-bottom:22px;">
+                        Edit the orange announcement strip shown at the top of every page. Changes go live instantly for all users.
+                    </p>
+                    <div class="adm-form-grid">
+                        <div class="adm-form-group" style="grid-column:1/-1;">
+                            <label class="adm-form-label" for="branding-announcementText">Announcement Text</label>
+                            <input class="adm-input" id="branding-announcementText" type="text" placeholder="🔥 Flash Sale Live — Extra 20% off all digital tools today only!">
+                        </div>
+                        <div class="adm-form-group">
+                            <label class="adm-form-label" for="branding-announcementLink">Button Link</label>
+                            <input class="adm-input" id="branding-announcementLink" type="text" placeholder="/shop/shop.html">
+                        </div>
+                        <div class="adm-form-group">
+                            <label class="adm-form-label" for="announce-btn-text">Button Label</label>
+                            <input class="adm-input" id="announce-btn-text" type="text" placeholder="Shop Now →">
+                        </div>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div style="margin-top:24px; border-radius:12px; overflow:hidden; border:1px solid var(--adm-border);">
+                        <div style="background:var(--adm-surface); padding:10px 14px; font-size:10px; font-weight:800; color:var(--adm-text-3); text-transform:uppercase; letter-spacing:1px; border-bottom:1px solid var(--adm-border);">
+                            LIVE PREVIEW
+                        </div>
+                        <div style="background:linear-gradient(90deg,#FF4A17,#ff8c00); padding:12px 20px; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:12px;">
+                            <span>🔥 Flash Sale Live — Extra 20% off all digital tools today only!</span>
+                            <a href="#" style="color:#fff; text-decoration:underline; font-weight:800;">Shop Now →</a>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:20px; display:flex; gap:12px; flex-wrap:wrap;">
+                        <button class="adm-btn adm-btn-primary" onclick="NexraAdmin.saveBranding()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> PUBLISH LIVE
+                        </button>
+                        <button class="adm-btn adm-btn-ghost" onclick="NexraAdmin.loadBranding()">
+                            <i class="fa-solid fa-rotate"></i> RELOAD SAVED
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================
+             PAGE: PRODUCTS
+             ================================================================ -->
+        <section class="adm-page" id="page-products">
+
+            <div class="adm-card">
+                <div class="adm-card-header">
+                    <div class="adm-card-title"><i class="fa-solid fa-box-archive"></i> All Products</div>
+                    <button class="adm-btn adm-btn-primary" onclick="NexraAdmin.openProductModal()">
+                        <i class="fa-solid fa-plus"></i> ADD PRODUCT
+                    </button>
+                </div>
+                <div class="adm-table-wrap">
+                    <table class="adm-table">
+                        <thead>
+                            <tr>
+                                <th>IMG</th>
+                                <th>PRODUCT</th>
+                                <th>PRICE</th>
+                                <th>STATUS</th>
+                                <th>SOLD</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-tbody">
+                            <tr><td colspan="6" style="text-align:center; padding:40px; color:var(--adm-text-3);">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Loading...
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================
+             PAGE: ORDERS
+             ================================================================ -->
+        <section class="adm-page" id="page-orders">
+
+            <div class="adm-card">
+                <div class="adm-card-header">
+                    <div class="adm-card-title"><i class="fa-solid fa-bag-shopping"></i> All Orders</div>
+                    <button class="adm-btn adm-btn-ghost" onclick="NexraAdmin.loadOrders()">
+                        <i class="fa-solid fa-rotate"></i> REFRESH
+                    </button>
+                </div>
+                <div class="adm-table-wrap">
+                    <table class="adm-table">
+                        <thead>
+                            <tr>
+                                <th>ORDER ID</th>
+                                <th>CUSTOMER</th>
+                                <th>PRODUCT</th>
+                                <th>AMOUNT</th>
+                                <th>STATUS</th>
+                                <th>DATE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-tbody">
+                            <tr><td colspan="6" style="text-align:center; padding:40px; color:var(--adm-text-3);">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Loading...
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </div><!-- /.adm-content -->
+</div><!-- /.adm-layout -->
+
+<!-- =========================================================================
+     PRODUCT ADD/EDIT MODAL
+     ========================================================================= -->
+<div id="product-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--adm-card); border:1px solid var(--adm-border); border-radius:24px; width:100%; max-width:560px; max-height:90vh; overflow-y:auto;">
+        <div style="padding:22px 26px; border-bottom:1px solid var(--adm-border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:var(--adm-card);">
+            <div style="font-family:'Space Grotesk'; font-size:17px; font-weight:800;">
+                <i class="fa-solid fa-box" style="color:var(--adm-brand);"></i>
+                <span id="pm-modal-title">Add Product</span>
+            </div>
+            <button class="adm-btn adm-btn-ghost" onclick="NexraAdmin.closeProductModal()" style="padding:8px 12px; border-radius:10px;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div style="padding:26px;">
+            <input type="hidden" id="pm-id">
+            <div class="adm-form-grid">
+                <div class="adm-form-group" style="grid-column:1/-1;">
+                    <label class="adm-form-label">Product Title *</label>
+                    <input class="adm-input" id="pm-title" type="text" placeholder="e.g. Canva Pro 1 Year">
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">Price (Rs.) *</label>
+                    <input class="adm-input" id="pm-price" type="number" placeholder="450">
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">Category</label>
+                    <select class="adm-select" id="pm-category">
+                        <option value="">Select Category</option>
+                        <option value="SaaS">SaaS</option>
+                        <option value="WordPress">WordPress</option>
+                        <option value="Graphics">Graphics</option>
+                        <option value="UI Kits">UI Kits</option>
+                        <option value="Courses">Courses</option>
+                        <option value="AI Tools">AI Tools</option>
+                    </select>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">Badge Label</label>
+                    <input class="adm-input" id="pm-badge" type="text" placeholder="HOT / NEW / SALE">
+                </div>
+                <div class="adm-form-group" style="grid-column:1/-1;">
+                    <label class="adm-form-label">Product Image URL</label>
+                    <input class="adm-input" id="pm-image" type="url" placeholder="https://...">
+                </div>
+                <div class="adm-form-group" style="grid-column:1/-1;">
+                    <label class="adm-form-label">Description</label>
+                    <textarea class="adm-textarea" id="pm-description" placeholder="Describe what the customer receives..."></textarea>
+                </div>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
+                <button class="adm-btn adm-btn-primary" onclick="NexraAdmin.saveProduct()" style="flex:1;">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> SAVE PRODUCT
+                </button>
+                <button class="adm-btn adm-btn-ghost" onclick="NexraAdmin.closeProductModal()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="adm-toast"></div>
+
+<!-- =========================================================================
+     SCRIPTS
+     ========================================================================= -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="/firebaseconfig.js"></script>
+<script src="/js/admin.js"></script>
+
+<script>
+    // Apply branding to admin logo on load
+    window.addEventListener('DOMContentLoaded', () => {
+        if (window.NexraBrand) {
+            const logoEl = document.getElementById('adm-logo-img');
+            if (logoEl) logoEl.src = window.NexraBrand.getAsset('logo');
+            const previewEl = document.getElementById('branding-logo-preview');
+            if (previewEl) previewEl.src = window.NexraBrand.getAsset('logo');
+        }
+        // Check Firebase status
+        const statusEl = document.getElementById('firebase-status');
+        if (statusEl) {
+            if (window.db) {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle"></i> Connected';
+                statusEl.className = 'adm-status adm-status-success';
+            } else {
+                statusEl.innerHTML = '<i class="fa-solid fa-circle"></i> Offline';
+                statusEl.className = 'adm-status adm-status-danger';
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

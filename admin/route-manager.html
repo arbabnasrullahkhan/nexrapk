@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — DYNAMIC ROUTE MANAGER (admin/route-manager.html)
+  ============================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Strict Anti-Clickjacking Frame Buster -->
+    <style id="antiClickjack">body{display:none !important;}</style>
+    <script>if(self===top){document.getElementById('antiClickjack').remove();}else{top.location=self.location;}</script>
+    <title>Route Manager | Nexra Tech PK Admin</title>
+    <!-- Maximum Security Robots Directives -->
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="theme-color" content="#020202">
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/admin-routes.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+</head>
+<body data-theme="dark" class="route-theme">
+    <div id="toast-container" aria-live="polite"></div>
+    
+    <!-- Custom Admin Minimal Header -->
+    <header class="admin-top-bar">
+        <div class="atb-brand">
+            <i class="fa-solid fa-route" style="color:#3b82f6;"></i> 
+            <span class="tech-font">NEXRA<span style="color:#3b82f6;">ROUTER</span></span>
+        </div>
+        <div class="atb-user">
+            <span id="admin-id-badge" class="badge-verifying">Verifying Identity...</span>
+        </div>
+    </header>
+
+    <!-- Hardcoded Auth Guard Layer -->
+    <div id="admin-guard" class="admin-guard">
+        <div class="guard-scanner" style="background:#3b82f6; box-shadow:0 0 20px 5px #3b82f6;"></div>
+        <i class="fa-solid fa-shield-halved fa-beat" style="font-size:64px; color:#3b82f6; margin-bottom:20px;"></i>
+        <h2 class="tech-font" style="color:#fff;">ROUTING ENGINE LOCKED</h2>
+        <p style="color:#a1a1aa;">Verifying Super Admin Authorization Level 9...</p>
+    </div>
+
+    <!-- MAIN UI -->
+    <main id="admin-main" class="admin-container" style="display:none;" role="main">
+        
+        <div class="admin-header">
+            <div>
+                <h1 class="tech-font"><i class="fa-solid fa-map-location-dot"></i> Dynamic Route Registry</h1>
+                <p>Manage URL mappings, SEO metadata, and Global Menu injections.</p>
+            </div>
+            <button class="route-btn-primary" onclick="NexraRoutesAdmin.openRouteModal()"><i class="fa-solid fa-plus"></i> Add New Route</button>
+        </div>
+
+        <!-- Routes Table -->
+        <div class="route-table-container">
+            <table class="route-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Key (Alias)</th>
+                        <th>Physical Path</th>
+                        <th>Menu Injections</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="routes-tbody">
+                    <!-- Loading Skeleton -->
+                    <tr><td colspan="5"><div class="skeleton" style="height:40px; border-radius:8px;"></div></td></tr>
+                    <tr><td colspan="5"><div class="skeleton" style="height:40px; border-radius:8px;"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Route Editor Modal -->
+    <div class="rm-modal-overlay" id="route-modal" style="display:none;">
+        <div class="rm-modal-card">
+            <div class="rm-modal-header">
+                <h3 class="tech-font" id="modal-title">Create Route</h3>
+                <button class="rm-btn-close" onclick="NexraRoutesAdmin.closeRouteModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="rm-modal-body">
+                <form id="route-form" onsubmit="event.preventDefault(); NexraRoutesAdmin.saveRoute();">
+                    <input type="hidden" id="r-doc-id">
+                    
+                    <div class="r-grid-2">
+                        <div class="r-field">
+                            <label>Route Key (e.g. 'shop')</label>
+                            <input type="text" id="r-key" class="r-input" required placeholder="shop">
+                        </div>
+                        <div class="r-field">
+                            <label>Physical HTML Path</label>
+                            <input type="text" id="r-path" class="r-input" required placeholder="/shop/shop.html">
+                        </div>
+                    </div>
+
+                    <div class="r-divider">SEO Meta Engine</div>
+                    <div class="r-field">
+                        <label>SEO Title</label>
+                        <input type="text" id="r-seo-title" class="r-input" placeholder="Shop | Nexra Tech PK">
+                    </div>
+                    <div class="r-field">
+                        <label>Meta Description</label>
+                        <textarea id="r-seo-desc" class="r-input" rows="2" placeholder="Explore the premium catalog..."></textarea>
+                    </div>
+                    <div class="r-field">
+                        <label>Open Graph Image URL</label>
+                        <input type="url" id="r-seo-img" class="r-input" placeholder="https://...">
+                    </div>
+
+                    <div class="r-divider">Menu Injector</div>
+                    <div class="r-field">
+                        <label>FontAwesome Icon Class</label>
+                        <input type="text" id="r-icon" class="r-input" placeholder="fa-solid fa-store">
+                    </div>
+                    <div class="r-menu-toggles">
+                        <label class="r-toggle-box">
+                            <input type="checkbox" id="r-menu-header">
+                            <div class="r-tb-inner"><i class="fa-solid fa-bars"></i> Global Header</div>
+                        </label>
+                        <label class="r-toggle-box">
+                            <input type="checkbox" id="r-menu-dock">
+                            <div class="r-tb-inner"><i class="fa-solid fa-mobile-screen"></i> Mobile Dock</div>
+                        </label>
+                        <label class="r-toggle-box">
+                            <input type="checkbox" id="r-menu-slider">
+                            <div class="r-tb-inner"><i class="fa-solid fa-bars-staggered"></i> Off-Canvas</div>
+                        </label>
+                    </div>
+                    <div class="r-field" style="flex-direction:row; align-items:center; gap:10px; margin-top:10px;">
+                        <input type="checkbox" id="r-is-active" checked style="width:16px; height:16px;">
+                        <label style="margin:0; font-size:14px; color:#fff;">Route is Active (Enabled)</label>
+                    </div>
+
+                    <div class="rm-modal-footer">
+                        <button type="button" class="route-btn-outline" onclick="NexraRoutesAdmin.closeRouteModal()">Cancel</button>
+                        <button type="submit" class="route-btn-primary" id="btn-save-route">Save Route</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <script src="/js/admin-routes.js"></script>
+</body>
+</html>
