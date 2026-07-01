@@ -1,0 +1,155 @@
+/* ==========================================================================
+   NEXRA TECH PK — STORE CUSTOMIZER CSS (css/store-customizer.css)
+   Scope: All .sc-* selectors
+   ========================================================================== */
+
+/* 1. AUTH GUARD */
+.sc-guard {
+    position: fixed; inset: 0; background: var(--bg-base); z-index: 99999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    transition: opacity 0.4s;
+}
+.sc-guard-icon { font-size: 64px; color: var(--brand-main); filter: drop-shadow(0 0 20px var(--brand-glow)); }
+.sc-guard p { font-size: 18px; font-weight: 700; color: var(--text-100); }
+
+/* 2. MAIN LAYOUT */
+.sc-container { padding: 90px 3% 100px; max-width: 1400px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; gap: 20px; }
+
+/* 3. TOPBAR */
+.sc-topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--glass-border); }
+.sc-topbar-title { display: flex; align-items: center; gap: 12px; }
+.sc-topbar-title h1 { font-size: 22px; font-weight: 900; color: var(--text-100); }
+.sc-topbar-sub { font-size: 13px; color: var(--text-300); font-weight: 600; }
+.sc-topbar-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.sc-btn-secondary { padding: 9px 16px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--bg-surface); color: var(--text-200); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: 0.3s; }
+.sc-btn-secondary:hover { background: var(--bg-elevated); color: var(--danger); border-color: var(--danger); }
+
+.sc-btn-preview-toggle { padding: 9px 16px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--bg-surface); color: var(--text-200); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: 0.3s; }
+.sc-btn-preview-toggle:hover { border-color: var(--brand-main); color: var(--brand-main); }
+.sc-btn-preview-toggle.active { background: rgba(124,58,237,0.1); border-color: var(--brand-main); color: var(--brand-main); }
+
+.sc-btn-deploy { padding: 10px 20px; border-radius: 10px; background: linear-gradient(135deg, var(--brand-main), #8b5cf6); color: #fff; font-size: 13px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 14px var(--brand-glow); }
+.sc-btn-deploy:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--brand-glow); }
+.sc-btn-deploy:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* 4. CONFIG STRIP */
+.sc-config-strip { display: flex; gap: 16px; flex-wrap: wrap; padding: 16px; background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 16px; }
+.sc-config-field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 160px; }
+.sc-label { font-size: 12px; font-weight: 800; color: var(--text-300); text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center; gap: 5px; }
+.sc-label i { color: var(--brand-main); }
+.sc-input { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--bg-base); color: var(--text-100); font-family: inherit; font-size: 14px; transition: 0.3s; }
+.sc-input:focus { outline: none; border-color: var(--brand-main); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+
+.sc-select-wrap { position: relative; }
+.sc-select { width: 100%; padding: 9px 36px 9px 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--bg-base); color: var(--text-100); font-size: 14px; font-family: inherit; appearance: none; cursor: pointer; transition: 0.3s; }
+.sc-select:focus { outline: none; border-color: var(--brand-main); }
+.sc-select-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-300); pointer-events: none; font-size: 12px; }
+
+.sc-type-tabs { display: flex; gap: 4px; }
+.sc-type-tab { padding: 7px 14px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--bg-base); color: var(--text-300); font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+.sc-type-tab.active { background: var(--brand-main); color: #fff; border-color: var(--brand-main); }
+
+.sc-toggle-field { align-items: flex-start; }
+.sc-switch { position: relative; display: inline-block; width: 48px; height: 26px; cursor: pointer; }
+.sc-switch input { display: none; }
+.sc-switch-knob { position: absolute; inset: 0; background: var(--bg-elevated); border-radius: 13px; border: 1px solid var(--glass-border); transition: 0.3s; }
+.sc-switch-knob::after { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; border-radius: 50%; background: var(--text-300); transition: 0.3s; }
+.sc-switch input:checked + .sc-switch-knob { background: var(--brand-main); border-color: var(--brand-main); }
+.sc-switch input:checked + .sc-switch-knob::after { transform: translateX(22px); background: #fff; }
+
+/* 5. PLACEMENT MAP */
+.sc-placement-map { background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 16px; padding: 16px; }
+.sc-map-title { font-size: 13px; font-weight: 800; color: var(--text-200); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.sc-map-title i { color: var(--brand-main); }
+
+.sc-storefront-preview { display: flex; flex-direction: column; gap: 6px; max-width: 480px; }
+.sc-map-mid { display: flex; gap: 6px; }
+.sc-map-mid .sc-map-zone { flex: 1; }
+
+.sc-map-zone {
+    padding: 10px 14px; border-radius: 10px; border: 1.5px dashed var(--glass-border);
+    font-size: 12px; font-weight: 700; color: var(--text-300); cursor: pointer;
+    display: flex; align-items: center; gap: 7px; transition: 0.3s;
+}
+.sc-map-zone:hover { border-color: var(--brand-main); color: var(--brand-main); background: rgba(124,58,237,0.04); }
+.sc-map-zone.active { border-style: solid; border-color: var(--brand-main); color: var(--brand-main); background: rgba(124,58,237,0.08); font-weight: 900; }
+.sc-map-tracking { opacity: 0.6; font-style: italic; }
+
+/* 6. SPLIT-SCREEN WORKSPACE */
+.sc-workspace { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 992px) { .sc-workspace.preview-open { grid-template-columns: 1fr 1fr; } }
+
+.sc-editor-panel, .sc-preview-panel {
+    background: #0d1117; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
+    min-height: 400px;
+}
+
+.sc-panel-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.sc-panel-dots { display: flex; gap: 5px; flex-shrink: 0; }
+.sc-dot { width: 12px; height: 12px; border-radius: 50%; }
+.sc-dot-red { background: #ff5f57; }
+.sc-dot-yellow { background: #febc2e; }
+.sc-dot-green { background: #28c840; }
+.sc-panel-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.5); font-family: 'JetBrains Mono', monospace; flex: 1; }
+.sc-panel-actions { display: flex; gap: 6px; }
+.sc-panel-btn { background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer; font-size: 14px; padding: 4px 6px; border-radius: 6px; transition: 0.2s; }
+.sc-panel-btn:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.05); }
+
+.sc-editor-body { display: flex; flex: 1; overflow: hidden; }
+.sc-line-numbers {
+    background: rgba(0,0,0,0.2); padding: 14px 10px; font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; line-height: 22px; color: rgba(255,255,255,0.2); text-align: right;
+    min-width: 40px; user-select: none; pointer-events: none; overflow: hidden;
+    white-space: pre;
+}
+.sc-editor-textarea {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    line-height: 22px; padding: 14px 14px; resize: none; tab-size: 2;
+}
+.sc-editor-textarea::placeholder { color: rgba(255,255,255,0.15); }
+
+.sc-editor-footer { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; background: rgba(255,255,255,0.03); border-top: 1px solid rgba(255,255,255,0.05); }
+.sc-editor-info { display: flex; gap: 14px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.35); }
+.sc-xss-status { font-size: 11px; color: #10b981; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+
+.sc-preview-iframe { flex: 1; border: none; background: #fff; }
+.sc-sandbox-badge { padding: 6px 14px; background: rgba(16,185,129,0.08); border-top: 1px solid rgba(16,185,129,0.15); font-size: 11px; color: #10b981; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+
+/* 7. DEPLOYED BLOCKS */
+.sc-blocks-section { margin-top: 8px; }
+.sc-blocks-title { font-size: 18px; font-weight: 900; color: var(--text-100); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.sc-blocks-list { display: flex; flex-direction: column; gap: 12px; }
+
+.sc-block-item { background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 14px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; transition: 0.3s; animation: scFadeIn 0.3s both; }
+.sc-block-item:hover { border-color: rgba(124,58,237,0.4); }
+.sc-block-left { display: flex; align-items: center; gap: 12px; }
+.sc-block-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(124,58,237,0.1); display: flex; align-items: center; justify-content: center; color: var(--brand-main); font-size: 18px; flex-shrink: 0; }
+.sc-block-name { font-size: 15px; font-weight: 800; color: var(--text-100); margin-bottom: 3px; }
+.sc-block-meta { font-size: 12px; color: var(--text-300); font-weight: 600; }
+.sc-block-right { display: flex; gap: 8px; flex-shrink: 0; }
+
+.sc-block-status { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 800; }
+.sc-block-status.active { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+.sc-block-status.inactive { background: rgba(239,68,68,0.08); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+
+.sc-block-del-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-300); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+.sc-block-del-btn:hover { background: rgba(239,68,68,0.1); color: var(--danger); border-color: var(--danger); }
+
+.sc-empty-blocks { text-align: center; padding: 40px; color: var(--text-300); font-size: 14px; }
+
+/* ERROR STATE */
+.sc-error-state { text-align: center; padding: 100px 20px; max-width: 500px; margin: 0 auto; }
+.sc-error-state i { font-size: 72px; color: var(--danger); margin-bottom: 20px; }
+.sc-error-state h2 { font-size: 26px; font-weight: 900; color: var(--text-100); margin-bottom: 12px; }
+.sc-error-state p { color: var(--text-200); font-size: 15px; }
+.sc-btn-outline { padding: 12px 24px; border-radius: 12px; border: 1px solid var(--brand-main); color: var(--brand-main); font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+.sc-btn-outline:hover { background: rgba(124,58,237,0.08); }
+
+/* ANIMATIONS & SKELETONS */
+@keyframes scFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.skeleton { position: relative; overflow: hidden; background: var(--bg-surface); pointer-events: none; }
+.skeleton::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: skelSweep 1.5s infinite; }
+@keyframes skelSweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }

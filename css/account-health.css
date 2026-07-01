@@ -1,0 +1,134 @@
+/* ==========================================================================
+   NEXRA TECH PK — ACCOUNT HEALTH CSS (css/account-health.css)
+   Scope: All .ah-* selectors
+   ========================================================================== */
+
+/* 1. AUTH GUARD */
+.ah-guard { position: fixed; inset: 0; background: var(--bg-base); z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; transition: opacity 0.4s; }
+.ah-guard-icon { font-size: 64px; color: var(--brand-main); filter: drop-shadow(0 0 20px var(--brand-glow)); }
+.ah-guard p { font-size: 18px; font-weight: 700; color: var(--text-100); }
+
+/* 2. MAIN LAYOUT */
+.ah-container { padding: 90px 4% 120px; max-width: 900px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; gap: 24px; }
+
+/* 3. PAGE HEADER */
+.ah-page-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
+.ah-page-header h1 { font-size: 24px; font-weight: 900; color: var(--text-100); display: flex; align-items: center; gap: 10px; }
+.ah-page-header p { font-size: 14px; color: var(--text-200); margin-top: 4px; }
+
+/* STATUS BADGE */
+.ah-status-pill { padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 900; display: inline-flex; align-items: center; gap: 8px; }
+.ah-status-active { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+.ah-status-warning { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); animation: ahPulse 2s ease-in-out infinite; }
+.ah-status-restricted { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); animation: ahPulse 1.5s ease-in-out infinite; }
+.ah-status-banned { background: #1a0000; color: #ff2d2d; border: 2px solid rgba(239,68,68,0.6); animation: ahPulseRed 1.2s ease-in-out infinite; }
+@keyframes ahPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.4); } 50% { box-shadow: 0 0 0 8px transparent; } }
+@keyframes ahPulseRed { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); } 50% { box-shadow: 0 0 0 10px transparent; } }
+
+/* 4. ALERT BANNERS */
+.ah-alert-banner { border-radius: 16px; padding: 20px 24px; margin-bottom: 4px; display: flex; gap: 16px; align-items: flex-start; animation: ahFadeDown 0.4s both; }
+.ah-alert-warning { background: rgba(245,158,11,0.08); border: 1.5px solid rgba(245,158,11,0.4); }
+.ah-alert-restricted { background: rgba(239,68,68,0.08); border: 1.5px solid rgba(239,68,68,0.4); }
+.ah-alert-banned { background: #1a0000; border: 2px solid rgba(239,68,68,0.6); }
+.ah-alert-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+.ah-alert-warning .ah-alert-icon { color: #f59e0b; }
+.ah-alert-restricted .ah-alert-icon { color: #ef4444; }
+.ah-alert-banned .ah-alert-icon { color: #ff2d2d; }
+.ah-alert-body h3 { font-size: 16px; font-weight: 900; color: var(--text-100); margin-bottom: 6px; }
+.ah-alert-body p { font-size: 13px; color: var(--text-200); line-height: 1.5; }
+.ah-alert-date { font-size: 11px; color: var(--text-300); margin-top: 6px; font-weight: 700; }
+
+/* 5. DASHBOARD GRID */
+.ah-dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (min-width: 600px) { .ah-dashboard-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.ah-dash-card { background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px 16px; text-align: center; transition: 0.3s; animation: ahFadeUp 0.4s both; }
+.ah-dash-card:hover { transform: translateY(-3px); border-color: rgba(124,58,237,0.3); }
+.ah-dash-icon { font-size: 24px; color: var(--brand-main); margin-bottom: 10px; }
+.ah-dash-value { font-size: 22px; font-weight: 900; color: var(--text-100); font-family: 'Space Grotesk', sans-serif; margin-bottom: 4px; }
+.ah-dash-label { font-size: 11px; color: var(--text-300); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* 6. FEATURE STATUS */
+.ah-section-title { font-size: 18px; font-weight: 900; color: var(--text-100); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.ah-section-title i { color: var(--brand-main); }
+.ah-features-section { margin-top: 8px; }
+.ah-features-grid { display: flex; flex-direction: column; gap: 10px; }
+
+.ah-feature-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 12px; transition: 0.3s; }
+.ah-feature-left { display: flex; align-items: center; gap: 12px; }
+.ah-feature-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.ah-feature-name { font-size: 14px; font-weight: 700; color: var(--text-100); }
+.ah-feature-desc { font-size: 12px; color: var(--text-300); }
+.ah-feature-active .ah-feature-icon { background: rgba(16,185,129,0.1); color: #10b981; }
+.ah-feature-locked .ah-feature-icon { background: rgba(239,68,68,0.1); color: var(--danger); }
+.ah-feature-locked { border-color: rgba(239,68,68,0.2); }
+
+.ah-feature-tag { padding: 4px 10px; border-radius: 50px; font-size: 11px; font-weight: 800; }
+.ah-tag-active { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+.ah-tag-locked { background: rgba(239,68,68,0.08); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+
+/* 7. EXCELLENT STATE */
+.ah-excellent-state { text-align: center; padding: 40px 24px; background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 24px; animation: ahFadeUp 0.5s both; }
+.ah-excellent-icon { font-size: 72px; margin-bottom: 16px; }
+.ah-excellent-state h2 { font-size: 28px; font-weight: 900; color: var(--text-100); margin-bottom: 10px; }
+.ah-excellent-state p { font-size: 15px; color: var(--text-200); line-height: 1.6; margin-bottom: 24px; }
+.ah-excellent-stats { display: flex; justify-content: center; gap: 0; flex-wrap: wrap; }
+.ah-exc-stat { padding: 0 24px; text-align: center; border-right: 1px solid var(--glass-border); }
+.ah-exc-stat:last-child { border-right: none; }
+.ah-exc-stat strong { display: block; font-size: 24px; font-weight: 900; color: var(--brand-main); font-family: 'Space Grotesk', sans-serif; }
+.ah-exc-stat span { font-size: 11px; color: var(--text-300); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* 8. STRIKES */
+.ah-strikes-section { margin-top: 8px; }
+.ah-strikes-list { display: flex; flex-direction: column; gap: 10px; }
+.ah-strike-item { padding: 16px 20px; background: var(--bg-surface); border: 1px solid rgba(245,158,11,0.2); border-radius: 12px; display: flex; gap: 14px; }
+.ah-strike-number { width: 32px; height: 32px; border-radius: 50%; background: rgba(245,158,11,0.12); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; flex-shrink: 0; margin-top: 2px; }
+.ah-strike-title { font-size: 14px; font-weight: 800; color: var(--text-100); margin-bottom: 4px; }
+.ah-strike-note { font-size: 13px; color: var(--text-200); line-height: 1.5; }
+.ah-strike-date { font-size: 11px; color: var(--text-300); font-weight: 700; margin-top: 6px; }
+
+/* 9. APPEAL FORM */
+.ah-appeal-card { background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-soft); }
+.ah-appeal-header { padding: 24px 28px; border-bottom: 1px solid var(--glass-border); background: linear-gradient(135deg, rgba(124,58,237,0.05), transparent); }
+.ah-appeal-header h2 { font-size: 20px; font-weight: 900; color: var(--text-100); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+.ah-appeal-header p { font-size: 14px; color: var(--text-200); }
+.ah-appeal-form { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+
+.ah-field-group { display: flex; flex-direction: column; gap: 8px; }
+.ah-label { font-size: 13px; font-weight: 800; color: var(--text-200); text-transform: uppercase; letter-spacing: 0.5px; }
+.ah-input, .ah-textarea { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--bg-base); color: var(--text-100); font-family: inherit; font-size: 14px; transition: 0.3s; }
+.ah-input:focus, .ah-textarea:focus { outline: none; border-color: var(--brand-main); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+.ah-textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+
+.ah-priority-wrap { display: flex; gap: 10px; flex-wrap: wrap; }
+.ah-priority-option input { display: none; }
+.ah-priority-label { padding: 8px 18px; border-radius: 10px; border: 1px solid var(--glass-border); font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.3s; display: inline-block; }
+.ah-p-normal { color: var(--text-200); }
+.ah-p-high { color: #f59e0b; }
+.ah-p-urgent { color: var(--danger); }
+.ah-priority-option input:checked + .ah-p-normal { background: rgba(124,58,237,0.1); border-color: var(--brand-main); color: var(--brand-main); }
+.ah-priority-option input:checked + .ah-p-high { background: rgba(245,158,11,0.1); border-color: #f59e0b; }
+.ah-priority-option input:checked + .ah-p-urgent { background: rgba(239,68,68,0.1); border-color: var(--danger); }
+
+.ah-btn-submit { padding: 14px; border-radius: 14px; background: linear-gradient(135deg, var(--brand-main), #8b5cf6); color: #fff; font-size: 15px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 20px var(--brand-glow); transition: 0.3s; }
+.ah-btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 26px var(--brand-glow); }
+.ah-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.ah-submitted-state { padding: 40px 28px; text-align: center; }
+.ah-submitted-state i { font-size: 56px; color: #10b981; margin-bottom: 16px; }
+.ah-submitted-state h3 { font-size: 20px; font-weight: 900; color: var(--text-100); margin-bottom: 8px; }
+.ah-submitted-state p { font-size: 14px; color: var(--text-200); line-height: 1.6; }
+
+/* ERROR STATE */
+.ah-error-state { text-align: center; padding: 100px 20px; }
+.ah-error-state i { font-size: 72px; color: var(--danger); margin-bottom: 20px; }
+.ah-error-state h2 { font-size: 24px; font-weight: 900; color: var(--text-100); margin-bottom: 12px; }
+.ah-error-state p { color: var(--text-200); }
+
+/* ANIMATIONS & SKELETONS */
+@keyframes ahFadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ahFadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+.ah-skeleton { display: flex; flex-direction: column; gap: 16px; }
+.skeleton { position: relative; overflow: hidden; background: var(--bg-surface); border-radius: 16px; pointer-events: none; }
+.skeleton::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: skelSweep 1.5s infinite; }
+@keyframes skelSweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }

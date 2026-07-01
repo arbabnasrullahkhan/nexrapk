@@ -1,0 +1,247 @@
+/* ==========================================================================
+   NEXRA TECH PK — RESELLER AUTH GATE CSS (css/reseller-auth.css)
+   Scope: All .ra-* selectors
+   ========================================================================== */
+
+/* ─── 1. HERO ─────────────────────────────────────────────────────────── */
+.ra-hero {
+    min-height: 100vh; position: relative; display: flex; align-items: center;
+    justify-content: center; overflow: hidden; padding: 100px 6% 80px;
+    background: radial-gradient(ellipse at 70% 40%, rgba(124,58,237,0.18) 0%, transparent 55%),
+                radial-gradient(ellipse at 15% 80%, rgba(59,130,246,0.08) 0%, transparent 45%),
+                var(--bg-base);
+}
+
+/* Dot grid overlay */
+.ra-hero::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(124,58,237,0.12) 1px, transparent 1px);
+    background-size: 36px 36px;
+}
+
+.ra-canvas-watermark {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    opacity: 0.025; pointer-events: none; z-index: 0;
+}
+
+/* Floating Particles */
+.ra-particle {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(124,58,237,0.4), transparent);
+}
+.ra-p1 { width: 300px; height: 300px; top: -80px; right: -60px; animation: raFloat 8s ease-in-out infinite; }
+.ra-p2 { width: 200px; height: 200px; bottom: 10%; left: -60px; animation: raFloat 11s ease-in-out infinite reverse; }
+.ra-p3 { width: 150px; height: 150px; top: 40%; right: 20%; animation: raFloat 7s ease-in-out infinite 2s; }
+@keyframes raFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.1); } }
+
+.ra-hero-content { position: relative; z-index: 2; max-width: 680px; animation: raFadeUp 0.7s both; }
+
+/* Launch Badge */
+.ra-launch-badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px;
+    background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 50px; font-size: 13px; font-weight: 800; color: var(--brand-main);
+    margin-bottom: 28px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.ra-badge-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #10b981;
+    animation: raBadgePulse 1.8s ease-in-out infinite;
+}
+@keyframes raBadgePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.6); } 50% { box-shadow: 0 0 0 6px transparent; } }
+
+.ra-hero-title {
+    font-size: clamp(36px, 7vw, 72px); font-weight: 900; color: var(--text-100);
+    line-height: 1.07; margin-bottom: 20px; letter-spacing: -2px;
+}
+.ra-gradient-text {
+    background: linear-gradient(135deg, var(--brand-main), #a855f7, #3b82f6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.ra-hero-sub {
+    font-size: 18px; color: var(--text-200); line-height: 1.75; margin-bottom: 36px;
+    max-width: 580px;
+}
+
+/* Stats Row */
+.ra-hero-stats { display: flex; align-items: center; gap: 0; flex-wrap: wrap; row-gap: 16px; margin-bottom: 40px; }
+.ra-hero-stat { text-align: center; padding: 0 24px; }
+.ra-hero-stat:first-child { padding-left: 0; }
+.ra-hero-stat strong { display: block; font-size: 26px; font-weight: 900; color: var(--text-100); font-family: 'Space Grotesk', sans-serif; }
+.ra-hero-stat span { font-size: 12px; color: var(--text-300); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.ra-hero-stat-sep { width: 1px; height: 40px; background: var(--glass-border); }
+
+.ra-scroll-hint { color: var(--text-300); font-size: 20px; margin-top: 20px; }
+
+/* ─── 2. SECTION LAYOUT ──────────────────────────────────────────────── */
+.ra-section { padding: 80px 0; }
+.ra-container { max-width: 1100px; margin: 0 auto; padding: 0 6%; }
+.ra-section-badge {
+    font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--brand-main); margin-bottom: 12px;
+}
+.ra-section-title { font-size: clamp(24px, 4vw, 40px); font-weight: 900; color: var(--text-100); margin-bottom: 40px; line-height: 1.2; }
+
+/* ─── 3. BENEFITS GRID ───────────────────────────────────────────────── */
+.ra-benefits { background: var(--bg-surface); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); }
+.ra-benefits-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+.ra-benefit-card {
+    background: var(--bg-base); border: 1px solid var(--glass-border); border-radius: 20px;
+    padding: 28px 24px; transition: 0.4s var(--ease); position: relative; overflow: hidden;
+    animation: raFadeUp 0.4s both;
+}
+.ra-benefit-card::before {
+    content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(124,58,237,0.04), transparent);
+    opacity: 0; transition: 0.4s;
+}
+.ra-benefit-card:hover { transform: translateY(-6px); border-color: rgba(124,58,237,0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.12); }
+.ra-benefit-card:hover::before { opacity: 1; }
+
+.ra-benefit-icon {
+    width: 52px; height: 52px; border-radius: 14px; background: rgba(124,58,237,0.1);
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+    color: var(--brand-main); margin-bottom: 16px; transition: 0.4s;
+}
+.ra-benefit-card:hover .ra-benefit-icon { background: var(--brand-main); color: #fff; transform: rotate(-5deg) scale(1.1); }
+.ra-benefit-card h3 { font-size: 17px; font-weight: 900; color: var(--text-100); margin-bottom: 8px; }
+.ra-benefit-card p { font-size: 14px; color: var(--text-200); line-height: 1.6; }
+
+/* ─── 4. GATE SECTION ────────────────────────────────────────────────── */
+.ra-gate-section { background: var(--bg-base); }
+.ra-gate-container { max-width: 560px; }
+
+/* Progress Indicator */
+.ra-progress-wrap {
+    display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 32px;
+}
+.ra-progress-step { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ra-ps-dot {
+    width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--glass-border);
+    background: var(--bg-surface); color: var(--text-300); display: flex; align-items: center;
+    justify-content: center; font-size: 14px; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.ra-progress-step span { font-size: 11px; font-weight: 800; color: var(--text-300); text-transform: uppercase; letter-spacing: 0.5px; }
+.ra-progress-step.active .ra-ps-dot { background: var(--brand-main); border-color: var(--brand-main); color: #fff; box-shadow: 0 0 16px var(--brand-glow); }
+.ra-progress-step.active span { color: var(--brand-main); }
+.ra-progress-step.done .ra-ps-dot { background: var(--success); border-color: var(--success); color: #fff; }
+
+.ra-progress-line {
+    flex: 1; height: 2px; background: var(--glass-border); max-width: 60px;
+    transition: background 0.6s;
+}
+.ra-progress-line.filled { background: var(--success); }
+
+/* Gate Card */
+.ra-gate-card {
+    background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 24px;
+    padding: 40px 32px; box-shadow: var(--shadow-float); position: relative; overflow: hidden;
+}
+.ra-gate-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--brand-main), #a855f7, #3b82f6);
+}
+
+/* Step Panels */
+.ra-step-panel { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; animation: raFadeUp 0.4s both; }
+.ra-step-icon-wrap { font-size: 56px; margin-bottom: 8px; filter: drop-shadow(0 4px 12px currentColor); }
+.ra-gate-card h2 { font-size: 24px; font-weight: 900; color: var(--text-100); }
+.ra-step-desc { font-size: 15px; color: var(--text-200); line-height: 1.6; max-width: 380px; }
+.ra-email-display {
+    background: var(--bg-elevated); border: 1px solid var(--glass-border); border-radius: 10px;
+    padding: 10px 20px; font-size: 14px; font-weight: 700; color: var(--brand-main);
+    font-family: monospace; letter-spacing: 0.5px;
+}
+
+/* Buttons */
+.ra-btn-primary {
+    width: 100%; padding: 14px 24px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--brand-main), #8b5cf6);
+    color: #fff; font-size: 15px; font-weight: 800; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 6px 20px var(--brand-glow); text-decoration: none; transition: 0.3s;
+}
+.ra-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px var(--brand-glow); }
+.ra-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.ra-btn-ghost {
+    width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border);
+    background: transparent; color: var(--text-200); font-size: 14px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s;
+}
+.ra-btn-ghost:hover { background: var(--bg-elevated); color: var(--text-100); }
+
+/* Key Input */
+.ra-key-input-wrap { position: relative; width: 100%; }
+.ra-key-prefix-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--brand-main); font-size: 16px; }
+.ra-key-input {
+    width: 100%; padding: 14px 16px 14px 44px; border-radius: 14px;
+    border: 2px solid var(--glass-border); background: var(--bg-base);
+    color: var(--text-100); font-size: 16px; font-weight: 800; font-family: monospace;
+    letter-spacing: 2px; text-align: center; transition: 0.3s;
+}
+.ra-key-input:focus { outline: none; border-color: var(--brand-main); box-shadow: 0 0 0 4px rgba(124,58,237,0.12); }
+.ra-key-input::placeholder { letter-spacing: 1px; font-weight: 400; font-size: 13px; color: var(--text-300); }
+
+.ra-btn-validate { margin-top: 4px; }
+
+/* WhatsApp CTA */
+.ra-request-sep {
+    position: relative; width: 100%; text-align: center; color: var(--text-300);
+    font-size: 13px; font-weight: 700;
+}
+.ra-request-sep::before, .ra-request-sep::after {
+    content: ''; position: absolute; top: 50%; width: 35%; height: 1px;
+    background: var(--glass-border);
+}
+.ra-request-sep::before { left: 0; }
+.ra-request-sep::after { right: 0; }
+
+.ra-btn-whatsapp {
+    width: 100%; padding: 14px 20px; border-radius: 14px; background: #25D366; color: #fff;
+    font-size: 15px; font-weight: 800; text-decoration: none; display: flex; align-items: center;
+    justify-content: center; gap: 10px; position: relative; overflow: hidden;
+    box-shadow: 0 6px 20px rgba(37,211,102,0.35); transition: 0.3s;
+}
+.ra-btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,211,102,0.45); }
+.ra-btn-whatsapp i { font-size: 20px; }
+.ra-wa-pulse {
+    position: absolute; right: 20px; width: 10px; height: 10px; border-radius: 50%; background: #fff;
+    animation: raPulse 1.6s ease-in-out infinite;
+}
+@keyframes raPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
+
+/* Success State */
+.ra-success-icon { color: #10b981; animation: raSuccessBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes raSuccessBounce { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+.ra-loader-ring {
+    width: 48px; height: 48px; border: 4px solid var(--glass-border); border-top-color: var(--brand-main);
+    border-radius: 50%; animation: raSpin 1s linear infinite;
+}
+@keyframes raSpin { to { transform: rotate(360deg); } }
+
+/* ─── 5. TESTIMONIALS ────────────────────────────────────────────────── */
+.ra-proof-section { background: var(--bg-surface); border-top: 1px solid var(--glass-border); }
+.ra-testimonials { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+.ra-testi-card {
+    background: var(--bg-base); border: 1px solid var(--glass-border); border-radius: 20px;
+    padding: 28px; transition: 0.3s; animation: raFadeUp 0.4s both;
+}
+.ra-testi-card:hover { transform: translateY(-4px); border-color: rgba(124,58,237,0.3); }
+.ra-testi-stars { font-size: 18px; color: #fbbf24; margin-bottom: 14px; letter-spacing: 2px; }
+.ra-testi-card > p { font-size: 14px; color: var(--text-200); line-height: 1.7; font-style: italic; margin-bottom: 20px; }
+.ra-testi-author { display: flex; align-items: center; gap: 12px; }
+.ra-testi-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--brand-main), #8b5cf6);
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: #fff; flex-shrink: 0;
+}
+.ra-testi-author strong { font-size: 14px; font-weight: 800; color: var(--text-100); }
+.ra-testi-author small { font-size: 12px; color: var(--text-300); }
+
+/* ─── ANIMATIONS & SKELETONS ─────────────────────────────────────────── */
+@keyframes raFadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.skeleton { position: relative; overflow: hidden; background: var(--bg-surface); border-color: transparent !important; pointer-events: none; }
+.skeleton::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: skelSweep 1.5s infinite; }
+@keyframes skelSweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }

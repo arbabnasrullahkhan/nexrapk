@@ -1,0 +1,59 @@
+/* css/admin-api.css */
+body.hacker-theme { background-color: #050505; color: #a1a1aa; font-family: 'Space Grotesk', sans-serif; margin: 0; padding: 0; }
+
+.admin-top-bar { height: 60px; background: rgba(0,0,0,0.8); border-bottom: 1px solid rgba(16, 185, 129, 0.2); display: flex; justify-content: space-between; align-items: center; padding: 0 24px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; backdrop-filter: blur(10px); }
+.atb-brand { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: 2px; }
+.atb-user { font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); }
+.badge-verifying { color: #f59e0b; }
+.badge-secure { color: #10b981; border-color: rgba(16, 185, 129, 0.3) !important; background: rgba(16, 185, 129, 0.1) !important; }
+
+/* Guard */
+.admin-guard { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; overflow: hidden; }
+.guard-scanner { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #10b981; box-shadow: 0 0 20px 5px #10b981; animation: scan 3s infinite linear; }
+@keyframes scan { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+/* Vault Layout */
+.admin-container { max-width: 1200px; margin: 0 auto; padding: 100px 24px 60px; display: flex; flex-direction: column; gap: 30px; }
+
+.admin-header h1 { font-size: 28px; color: #fff; margin-bottom: 8px; }
+.admin-header p { font-size: 14px; color: #71717a; }
+
+.vault-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+
+.vault-card { background: rgba(16, 185, 129, 0.02); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 20px; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.vault-card:hover { border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.05); transform: translateY(-2px); }
+
+.vc-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
+.vc-title { font-size: 16px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+
+/* Toggle */
+.toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: #71717a; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); }
+input:checked + .slider:before { transform: translateX(20px); background-color: #10b981; box-shadow: 0 0 10px #10b981; }
+
+.vc-body { display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+.input-group label { font-size: 11px; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px; }
+
+.pwd-wrapper { position: relative; }
+.vault-input { width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px 14px; color: #10b981; font-family: monospace; font-size: 14px; transition: 0.3s; }
+.vault-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 10px rgba(16,185,129,0.2); }
+.vault-input.blurred-input { filter: blur(3px); opacity: 0.7; }
+.vault-input.blurred-input:focus { filter: blur(0); opacity: 1; }
+
+.eye-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #71717a; cursor: pointer; font-size: 14px; transition: 0.3s; z-index: 2; }
+.eye-toggle:hover { color: #fff; }
+
+.vc-actions { display: flex; gap: 10px; margin-top: 10px; }
+.v-btn { flex: 1; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 800; border: none; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Space Grotesk', sans-serif; position: relative; overflow: hidden; }
+.v-btn-test { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+.v-btn-test:hover { background: rgba(255,255,255,0.1); }
+.v-btn-save { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+.v-btn-save:hover { background: rgba(16, 185, 129, 0.2); box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+
+.v-btn.loading { color: transparent !important; pointer-events: none; }
+.v-btn.loading::after { content: ""; position: absolute; width: 16px; height: 16px; border: 2px solid transparent; border-top-color: currentColor; border-radius: 50%; animation: btnSpin 0.8s linear infinite; }
+@keyframes btnSpin { to { transform: rotate(360deg); } }

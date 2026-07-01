@@ -1,0 +1,132 @@
+/* ==========================================================================
+   NEXRA TECH PK — RESELLER DASHBOARD CSS (css/reseller.css)
+   Scope: All .rs-* selectors
+   ========================================================================== */
+
+/* 1. PRE-AUTH GUARD */
+.rs-pre-guard {
+    position: fixed; inset: 0; background: var(--bg-base); z-index: 99999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 0.5s var(--ease), visibility 0.5s;
+}
+.rs-guard-spinner { font-size: 56px; color: var(--brand-main); margin-bottom: 24px; filter: drop-shadow(0 0 12px var(--brand-glow)); }
+.rs-pre-guard p { color: var(--text-100); font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+
+/* 2. LAYOUT */
+.rs-container { padding: 90px 4% 100px; max-width: 1400px; margin: 0 auto; min-height: 100vh; }
+.rs-header { margin-bottom: 40px; animation: rsFadeIn 0.5s forwards; }
+.rs-header h1 { font-size: 32px; font-weight: 900; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.rs-header h1 i { color: var(--brand-main); }
+.rs-header p { color: var(--text-200); font-size: 16px; }
+
+.rs-dashboard-layout { display: flex; flex-direction: column; gap: 32px; }
+@media (min-width: 992px) {
+    .rs-dashboard-layout { flex-direction: row; align-items: flex-start; }
+}
+
+/* 3. NAVIGATION (Tabs) */
+.rs-nav {
+    display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px;
+    scrollbar-width: none;
+}
+.rs-nav::-webkit-scrollbar { display: none; }
+@media (min-width: 992px) {
+    .rs-nav { flex-direction: column; width: 260px; flex-shrink: 0; position: sticky; top: 120px; overflow: visible; }
+}
+
+.rs-nav-btn {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    padding: 14px 20px; border-radius: 16px; color: var(--text-200);
+    font-weight: 700; font-size: 14px; text-align: left;
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    transition: var(--transition); white-space: nowrap;
+}
+.rs-nav-btn i { font-size: 16px; width: 20px; text-align: center; }
+.rs-nav-btn:hover { background: var(--bg-elevated); color: var(--brand-main); }
+.rs-nav-btn.active {
+    background: var(--brand-main); color: #fff; border-color: var(--brand-main);
+    box-shadow: 0 8px 24px var(--brand-glow);
+}
+.rs-nav-btn.active i { color: #fff; }
+
+/* 4. CONTENT PANELS */
+.rs-content { flex: 1; min-width: 0; }
+.rs-tab-panel { display: none; animation: rsFadeUp 0.4s var(--ease) forwards; }
+.rs-tab-panel.active { display: block; }
+.rs-section-title { font-size: 24px; font-weight: 800; margin-bottom: 24px; color: var(--text-100); }
+
+@keyframes rsFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rsFadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 5. CARDS & GRID */
+.rs-card {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    border-radius: 20px; padding: 24px; box-shadow: var(--shadow-soft);
+}
+.rs-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+.rs-stat-card {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    padding: 24px; border-radius: 20px; position: relative; overflow: hidden;
+}
+.rs-stat-card::after {
+    content: ''; position: absolute; right: -20px; bottom: -20px;
+    width: 100px; height: 100px; background: var(--brand-glow); filter: blur(40px);
+}
+.rs-stat-card h3 { font-size: 28px; font-weight: 900; font-family: 'Space Grotesk'; color: var(--text-100); margin-bottom: 4px; }
+.rs-stat-card p { font-size: 13px; color: var(--text-300); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+/* 6. FORMS & INPUTS */
+.rs-input-group { margin-bottom: 20px; }
+.rs-input-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text-200); margin-bottom: 8px; }
+.rs-input {
+    width: 100%; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--glass-border);
+    background: var(--bg-elevated); color: var(--text-100); font-family: inherit; font-size: 15px; outline: none; transition: 0.3s;
+}
+.rs-input:focus { border-color: var(--brand-main); box-shadow: 0 0 0 3px var(--brand-glow); }
+.rs-hint { font-size: 12px; color: var(--text-300); margin-top: 6px; }
+
+/* Store Builder Specific */
+.rs-logo-upload-wrap { display: flex; align-items: center; gap: 24px; }
+.rs-logo-preview {
+    width: 80px; height: 80px; border-radius: 20px; background: var(--bg-elevated); border: 2px dashed var(--glass-border);
+    display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--text-300); overflow: hidden;
+}
+.rs-logo-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Wholesale Inventory Specific */
+.rs-markup-control { background: var(--bg-surface); border: 1px solid var(--glass-border); padding: 16px 20px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.rs-markup-control label { font-weight: 800; font-size: 15px; }
+.rs-inventory-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.rs-item-card { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 16px; }
+.rs-item-img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; }
+.rs-item-info { flex: 1; }
+.rs-item-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.rs-item-prices { display: flex; gap: 16px; font-size: 13px; }
+.rs-price-base { color: var(--text-300); text-decoration: line-through; }
+.rs-price-reseller { color: var(--brand-main); font-weight: 800; }
+
+/* Key Manager */
+.rs-key-list { display: flex; flex-direction: column; gap: 16px; }
+.rs-key-card { background: var(--bg-surface); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; display: flex; flex-direction: column; gap: 16px; }
+@media(min-width: 768px) { .rs-key-card { flex-direction: row; align-items: center; justify-content: space-between; } }
+.rs-key-meta h4 { font-size: 16px; font-weight: 700; }
+.rs-key-meta p { font-size: 13px; color: var(--text-300); margin-top: 4px; }
+.rs-key-actions { display: flex; gap: 10px; }
+.rs-key-box { background: var(--bg-elevated); padding: 10px 16px; border-radius: 8px; font-family: monospace; font-weight: 800; color: var(--text-100); letter-spacing: 1px; border: 1px dashed var(--glass-border); }
+
+/* Wallet */
+.rs-wallet-balance { background: linear-gradient(135deg, var(--brand-main), #8b5cf6); border-radius: 24px; padding: 32px; color: #fff; text-align: center; }
+.rs-wallet-balance span { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; opacity: 0.9; }
+.rs-wallet-balance h3 { font-size: 42px; font-weight: 900; margin-top: 8px; }
+
+/* 7. UTILITIES & SKELETONS */
+.rs-empty { text-align: center; padding: 40px; color: var(--text-300); font-weight: 600; border: 1px dashed var(--glass-border); border-radius: 16px; }
+.rs-empty i { font-size: 32px; display: block; margin-bottom: 12px; opacity: 0.5; }
+
+.skeleton { position: relative; overflow: hidden; background: var(--bg-surface); border-color: transparent !important; }
+.skeleton::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: skelSweep 1.5s infinite; }
+[data-theme="light"] .skeleton::before { background: linear-gradient(90deg, transparent, rgba(0,0,0,0.03), transparent); }
+@keyframes skelSweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.skel-text, .skel-title { background: var(--bg-elevated); border-radius: 4px; height: 16px; }
+.skel-title { height: 28px; }
+.w-50 { width: 50%; } .w-80 { width: 80%; } .w-100 { width: 100%; } .mt-2 { margin-top: 8px; } .mt-4 { margin-top: 16px; }

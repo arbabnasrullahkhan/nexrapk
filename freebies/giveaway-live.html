@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<!--
+  ============================================================================
+  NEXRA TECH PK — LIVE MEGA GIVEAWAY (freebies/giveaway-live.html)
+  ============================================================================
+  ARCHITECTURE OVERVIEW:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  SELF-CONTAINED Gamified Mega Draw & Spin Wheel Engine.             │
+  │  Global UI shell elements fetched at runtime from /components/.     │
+  │                                                                      │
+  │  COMPONENT MOUNT POINTS:                                             │
+  │  #header-mount   ← /components/header.html                          │
+  │  #dock-mount     ← /components/dock.html                            │
+  │  #cart-mount     ← /components/cart-drawer.html                     │
+  │  #footer-mount   ← /components/footer.html                          │
+  │                                                                      │
+  │  SPECIFICS:                                                          │
+  │  - Server-synced Firestore countdown timer.                         │
+  │  - 60FPS HTML5 Canvas Spin Wheel + Confetti Engine.                 │
+  │  - Boarding-pass digital ticket generation with Canvas QR.          │
+  │  - JSON-LD Event Schema & Advanced Anti-Scraping.                   │
+  └─────────────────────────────────────────────────────────────────────┘
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SEO, OPEN GRAPH & TWITTER CARDS
+         ════════════════════════════════════════════════════════════════ -->
+    <title>Live Mega Giveaway | Nexra Tech PK</title>
+    <meta name="description" content="Enter the Live Mega Draw on Nexra Tech PK! Claim your digital ticket, multiply your chances, and watch the live Spin Wheel for massive digital asset prizes.">
+    <meta name="keywords" content="Nexra Tech Giveaway, Live Draw, Spin Wheel, Free Premium Assets, Freebies, Digital Tickets">
+    <meta name="author" content="Nexra Tech PK">
+    <link rel="canonical" href="https://nexratech.pk/freebies/giveaway-live.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Live Mega Giveaway | Nexra Tech PK">
+    <meta property="og:description" content="Generate your ticket and watch the live spin wheel to win massive premium assets!">
+    <meta property="og:url" content="https://nexratech.pk/freebies/giveaway-live.html">
+    <meta property="og:image" content="https://nexratech.pk/assets/og-giveaway.jpg">
+    <meta property="og:site_name" content="Nexra Tech PK">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Live Mega Giveaway!">
+    <meta name="twitter:description" content="Don't miss the ultimate live draw on Nexra Tech PK.">
+    <meta name="twitter:image" content="https://nexratech.pk/assets/twitter-giveaway.jpg">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" id="meta-theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#020202" media="(prefers-color-scheme: dark)">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         PRECONNECT & FONTS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         STYLESHEETS
+         ════════════════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/giveaway.css">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         FIREBASE SDK & CONFIG
+         ════════════════════════════════════════════════════════════════ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/firebaseconfig.js"></script>
+
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Anti-Scraping -->
+    <style>
+        body.gw-protected { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+    </style>
+    <script>
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's')) { e.preventDefault(); }
+        });
+    </script>
+    
+    <!-- Dynamic JSON-LD Mount -->
+    <script type="application/ld+json" id="gw-json-ld">{}</script>
+</head>
+
+<body class="gw-protected">
+    <!-- TOAST & MOUNT POINTS -->
+    <div id="toast-container" aria-live="polite"></div>
+    <div id="cart-mount"></div>
+    <div id="header-mount"></div>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         MAIN GIVEAWAY LAYOUT
+         ════════════════════════════════════════════════════════════════ -->
+    <main id="gw-main" class="gw-container" role="main">
+        
+        <!-- TOP: HERO & COUNTDOWN -->
+        <header class="gw-hero">
+            <div class="gw-live-badge" id="gw-live-badge"><span class="gw-pulse"></span> LIVE DRAW</div>
+            <h1 class="gw-hero-title tech-font" id="gw-event-title">Mega Giveaway Series</h1>
+            <p class="gw-hero-subtitle" id="gw-event-desc">Loading active event details...</p>
+
+            <div class="gw-countdown" id="gw-countdown">
+                <div class="gw-cd-box"><span id="cd-days" class="tech-font">00</span><small>Days</small></div>
+                <div class="gw-cd-colon">:</div>
+                <div class="gw-cd-box"><span id="cd-hours" class="tech-font">00</span><small>Hours</small></div>
+                <div class="gw-cd-colon">:</div>
+                <div class="gw-cd-box"><span id="cd-mins" class="tech-font">00</span><small>Mins</small></div>
+                <div class="gw-cd-colon">:</div>
+                <div class="gw-cd-box gw-glow-box"><span id="cd-secs" class="tech-font">00</span><small>Secs</small></div>
+            </div>
+        </header>
+
+        <div class="gw-layout-grid">
+            
+            <!-- LEFT: TICKET & GROWTH HACKS -->
+            <section class="gw-left-col">
+                
+                <!-- Auth Block -->
+                <div id="gw-auth-block" class="gw-card" style="text-align:center;">
+                    <i class="fa-solid fa-lock" style="font-size:36px; color:var(--text-300); margin-bottom:16px;"></i>
+                    <h3 class="tech-font" style="margin-bottom:12px;">Login Required</h3>
+                    <p style="color:var(--text-200); margin-bottom:24px; font-size:14px;">Securely authenticate to generate your tamper-proof ticket.</p>
+                    <button class="btn btn-primary w-100" onclick="window.location.href='/user/auth-gate.html?redirect=/freebies/giveaway-live.html'">Authenticate Now</button>
+                </div>
+
+                <!-- Generated Ticket UI (Hidden by default) -->
+                <div id="gw-ticket-block" class="gw-ticket-card" style="display:none;">
+                    <div class="gw-ticket-top">
+                        <div class="gw-ticket-branding">
+                            <i class="fa-solid fa-gem" style="color:#fbbf24;"></i> NexraTech PK
+                        </div>
+                        <div class="gw-ticket-serial" id="gw-t-serial">#NX-000000</div>
+                    </div>
+                    
+                    <div class="gw-ticket-body">
+                        <div class="gw-t-info">
+                            <p>Participant</p>
+                            <h4 id="gw-t-name">Loading...</h4>
+                        </div>
+                        <div class="gw-t-info">
+                            <p>Ticket Weight</p>
+                            <h4 id="gw-t-weight" style="color:var(--brand-main);">1x (Standard)</h4>
+                        </div>
+                        
+                        <!-- Canvas QR -->
+                        <div class="gw-t-qr-wrap">
+                            <canvas id="gw-t-qr" width="80" height="80"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="gw-ticket-bottom">
+                        <div>Draw Date: <strong id="gw-t-date">TBD</strong></div>
+                        <div style="color:var(--success); font-weight:800;"><i class="fa-solid fa-check-circle"></i> VERIFIED</div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button id="gw-btn-generate" class="btn btn-primary w-100 gw-btn-glow" style="display:none; margin-top:20px;" onclick="NexraGiveaway.generateTicket()">Generate My Ticket</button>
+
+                <!-- Growth Hack: Multipliers -->
+                <div id="gw-multiplier-block" class="gw-card" style="margin-top:24px; display:none;">
+                    <h3 class="tech-font" style="font-size:16px; margin-bottom:16px;"><i class="fa-solid fa-bolt" style="color:#fbbf24;"></i> Boost Your Odds</h3>
+                    
+                    <div class="gw-boost-item" id="gw-boost-vip">
+                        <div>
+                            <strong>VIP Member Bonus</strong>
+                            <p>Auto-applied for Gold/Diamond.</p>
+                        </div>
+                        <span class="gw-boost-badge">+2x Weight</span>
+                    </div>
+
+                    <button class="gw-share-btn" onclick="NexraGiveaway.shareForBonus()">
+                        <i class="fa-solid fa-share-nodes"></i> Share & Get +1x Weight
+                    </button>
+                </div>
+            </section>
+
+            <!-- RIGHT: SPIN WHEEL & WINNERS -->
+            <section class="gw-right-col">
+                
+                <div class="gw-card gw-wheel-card">
+                    <h3 class="tech-font gw-section-title"><i class="fa-solid fa-compact-disc"></i> Live Spin Wheel</h3>
+                    <p class="gw-hint mb-4">Wheel activates automatically when admin initiates the draw via secure WebSockets.</p>
+                    
+                    <!-- Wheel Container -->
+                    <div class="gw-wheel-wrap">
+                        <div class="gw-wheel-pointer"><i class="fa-solid fa-caret-down"></i></div>
+                        <canvas id="gw-spin-wheel" width="400" height="400"></canvas>
+                    </div>
+
+                    <!-- Overlay before draw -->
+                    <div class="gw-wheel-overlay" id="gw-wheel-overlay">
+                        <i class="fa-solid fa-lock" style="font-size:32px; margin-bottom:16px; opacity:0.5;"></i>
+                        <h4>Draw Locked</h4>
+                        <p>Waiting for countdown...</p>
+                    </div>
+                    
+                    <!-- Winner Announcement -->
+                    <div class="gw-winner-alert" id="gw-winner-alert">
+                        <h3><i class="fa-solid fa-trophy"></i> WE HAVE A WINNER!</h3>
+                        <p id="gw-winner-name" style="font-weight:900; font-size:24px; color:#fbbf24; margin-top:8px;">---</p>
+                        <p id="gw-winner-serial" style="font-family:monospace; margin-top:4px;">---</p>
+                    </div>
+                </div>
+
+                <div class="gw-card mt-4">
+                    <h3 class="tech-font gw-section-title"><i class="fa-solid fa-clock-rotate-left"></i> Previous Winners</h3>
+                    <div id="gw-winners-list" class="gw-winners-list">
+                        <!-- Skeletons -->
+                        <div class="gw-winner-item skeleton" style="height:50px;"></div>
+                        <div class="gw-winner-item skeleton" style="height:50px;"></div>
+                        <div class="gw-winner-item skeleton" style="height:50px;"></div>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MOUNTS -->
+    <div id="dock-mount"></div>
+    <div id="footer-mount"></div>
+
+    <!-- SCRIPTS -->
+    <script src="/js/app.js"></script>
+    <script src="/components/loader.js"></script>
+    <!-- Qrious for fast Canvas QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="/js/giveaway.js"></script>
+
+    <!-- BOOT -->
+    <script>
+        (function NexraGiveawayBoot() {
+            'use strict';
+            const savedTheme = localStorage.getItem('nexra_theme');
+            if (savedTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+            NexraComponents.load([
+                { file: '/components/header.html',      mount: '#header-mount'  },
+                { file: '/components/cart-drawer.html', mount: '#cart-mount'    },
+                { file: '/components/dock.html',        mount: '#dock-mount'    },
+                { file: '/components/footer.html',      mount: '#footer-mount'  }
+            ]).then(function () {
+                NexraGiveaway.init();
+            }).catch(function (err) {
+                console.error('Boot failed:', err);
+                if (window.NexraGiveaway) NexraGiveaway.init();
+            });
+        })();
+    </script>
+</body>
+</html>

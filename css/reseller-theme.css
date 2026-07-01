@@ -1,0 +1,70 @@
+/* css/reseller-theme.css */
+.ts-guard{position:fixed;inset:0;background:var(--bg-base);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;}
+.ts-guard-icon{font-size:64px;color:var(--brand-main);}
+.ts-guard p,.ts-error-state h2{font-size:18px;font-weight:700;color:var(--text-100);}
+.ts-error-state{text-align:center;padding:100px 20px;}
+.ts-error-state i{font-size:64px;color:var(--danger);margin-bottom:20px;}
+.ts-container{max-width:900px;margin:0 auto;padding:90px 4% 120px;display:flex;flex-direction:column;gap:28px;}
+
+/* Store Link Widget */
+.ts-store-link-card{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(59,130,246,.05));border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:20px 22px;}
+.ts-link-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--brand-main);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.ts-link-display{display:flex;align-items:center;gap:10px;background:var(--bg-base);border:1px solid var(--glass-border);border-radius:12px;padding:10px 14px;margin-bottom:8px;}
+.ts-url-text{flex:1;font-size:13px;font-family:monospace;color:var(--text-100);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ts-copy-btn{background:var(--brand-main);color:#fff;border:none;border-radius:8px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ts-link-note{font-size:12px;color:var(--text-300);display:flex;align-items:center;gap:5px;}
+
+/* Section */
+.ts-section{display:flex;flex-direction:column;gap:16px;}
+.ts-section-title{font-size:18px;font-weight:900;color:var(--text-100);display:flex;align-items:center;gap:9px;}
+.ts-section-title i{color:var(--brand-main);}
+
+/* Branding Form */
+.ts-branding-form{background:var(--bg-surface);border:1px solid var(--glass-border);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;}
+.ts-field-group{display:flex;flex-direction:column;gap:8px;}
+.ts-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-300);}
+.ts-input,.ts-textarea{padding:11px 13px;border-radius:12px;border:1px solid var(--glass-border);background:var(--bg-base);color:var(--text-100);font-family:inherit;font-size:14px;transition:.3s;width:100%;}
+.ts-input:focus,.ts-textarea:focus{outline:none;border-color:var(--brand-main);}
+.ts-textarea{resize:vertical;}
+
+/* Logo Upload */
+.ts-logo-upload{border:2px dashed var(--glass-border);border-radius:16px;padding:28px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-300);font-size:14px;transition:.3s;}
+.ts-logo-upload:hover{border-color:var(--brand-main);color:var(--brand-main);}
+.ts-logo-upload i{font-size:32px;}
+.ts-logo-preview{position:relative;display:flex;align-items:center;gap:12px;}
+.ts-logo-preview img{width:80px;height:80px;border-radius:12px;object-fit:contain;background:var(--bg-base);border:1px solid var(--glass-border);padding:4px;}
+.ts-logo-preview button{width:28px;height:28px;border-radius:50%;background:rgba(239,68,68,.1);color:var(--danger);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+.ts-btn-primary{padding:13px 24px;border-radius:14px;background:linear-gradient(135deg,var(--brand-main),#8b5cf6);color:#fff;font-size:14px;font-weight:800;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 6px 20px var(--brand-glow);transition:.3s;align-self:flex-start;}
+.ts-btn-primary:hover{transform:translateY(-2px);}
+.ts-btn-save-brand{width:100%!important;justify-content:center;}
+
+/* Theme Grid */
+.ts-theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.ts-theme-card{background:var(--bg-surface);border:1px solid var(--glass-border);border-radius:18px;overflow:hidden;cursor:pointer;transition:.3s;}
+.ts-theme-card:hover{transform:translateY(-4px);border-color:rgba(124,58,237,.5);}
+.ts-theme-card.applied{border-color:var(--brand-main);box-shadow:0 0 0 2px var(--brand-main);}
+.ts-theme-thumb{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.ts-theme-info{padding:12px;}
+.ts-theme-name{font-size:14px;font-weight:800;color:var(--text-100);margin-bottom:4px;}
+.ts-theme-desc{font-size:12px;color:var(--text-300);}
+.ts-theme-apply-btn{width:100%;margin-top:10px;padding:8px;border-radius:9px;background:var(--brand-main);color:#fff;font-size:12px;font-weight:800;border:none;cursor:pointer;transition:.3s;}
+
+/* Live Preview Frame */
+.ts-preview-frame{background:#fff;border-radius:20px;overflow:hidden;box-shadow:var(--shadow-float);border:1px solid var(--glass-border);}
+.ts-preview-store-header{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid #e5e7eb;}
+.ts-preview-store-header img{width:44px;height:44px;border-radius:10px;object-fit:contain;}
+.ts-preview-store-name{font-size:16px;font-weight:800;color:#111;}
+.ts-preview-desc{font-size:12px;color:#666;margin-top:2px;}
+.ts-preview-products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;}
+.ts-preview-prod-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px;}
+.ts-prev-img{width:100%;height:80px;background:#e5e7eb;border-radius:8px;margin-bottom:8px;}
+.ts-prev-title{font-size:12px;font-weight:700;color:#374151;}
+/* NON-REMOVABLE ATTRIBUTION FOOTER */
+.ts-attribution-footer{background:#f3f4f6;border-top:1px solid #e5e7eb;padding:10px 20px;text-align:center;}
+.ts-attribution-footer a{font-size:12px;font-weight:700;color:var(--brand-main);text-decoration:none;display:flex;align-items:center;justify-content:center;gap:5px;}
+
+/* Skeleton */
+.skeleton{position:relative;overflow:hidden;background:var(--bg-surface);pointer-events:none;}
+.skeleton::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);animation:skelSweep 1.5s infinite;}
+@keyframes skelSweep{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}

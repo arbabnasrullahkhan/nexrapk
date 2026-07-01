@@ -1,0 +1,133 @@
+/* ==========================================================================
+   NEXRA TECH PK — VIP DIAMOND HUB CSS (css/vip.css)
+   Scope: All .vp-* selectors
+   ========================================================================== */
+
+/* 1. PRE-AUTH GUARD */
+.vp-pre-guard {
+    position: fixed; inset: 0; background: var(--bg-base); z-index: 99999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 0.5s var(--ease), visibility 0.5s;
+}
+.vp-guard-icon { font-size: 56px; color: #fbbf24; margin-bottom: 24px; filter: drop-shadow(0 0 16px rgba(251,191,36,0.5)); }
+.vp-pre-guard p { color: var(--text-100); font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+
+/* 2. LAYOUT & HEADER */
+.vp-container { padding: 90px 4% 100px; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
+.vp-header {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    border-radius: 24px; padding: 32px; margin-bottom: 32px;
+    box-shadow: var(--shadow-soft); display: flex; flex-direction: column; gap: 24px;
+    position: relative; overflow: hidden;
+    animation: vpFadeIn 0.5s forwards;
+}
+.vp-header::after {
+    content: ''; position: absolute; right: -50px; top: -50px;
+    width: 200px; height: 200px; background: rgba(251,191,36,0.15); filter: blur(50px);
+}
+
+@media (min-width: 768px) {
+    .vp-header { flex-direction: row; justify-content: space-between; align-items: center; }
+}
+
+.vp-badge-glow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3);
+    padding: 6px 14px; border-radius: 50px; font-size: 11px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+}
+.vp-gold-text { background: linear-gradient(135deg, #fcd34d, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 36px; font-weight: 900; margin-bottom: 8px; }
+.vp-header-left p { color: var(--text-200); font-size: 15px; max-width: 400px; }
+
+/* SVG Progress Ring */
+.vp-header-right { display: flex; align-items: center; gap: 24px; z-index: 2; }
+.vp-progress-ring-container { position: relative; width: 100px; height: 100px; }
+.vp-progress-ring { transform: rotate(-90deg); }
+.vp-ring-bg { stroke: var(--glass-border); }
+.vp-ring-fill { stroke: #fbbf24; stroke-linecap: round; stroke-dasharray: 276.46; stroke-dashoffset: 276.46; transition: stroke-dashoffset 1.5s var(--ease); filter: drop-shadow(0 0 6px rgba(251,191,36,0.6)); }
+.vp-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.vp-ring-text h4 { font-size: 24px; font-weight: 900; color: var(--text-100); line-height: 1; margin-bottom: 2px; }
+.vp-ring-text span { font-size: 9px; font-weight: 800; text-transform: uppercase; color: var(--text-300); }
+
+.vp-btn-gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #fff; box-shadow: 0 8px 24px rgba(217,119,6,0.3); border: none; }
+.vp-btn-gold:hover { background: linear-gradient(135deg, #fcd34d, #fbbf24); box-shadow: 0 12px 32px rgba(217,119,6,0.4); }
+
+/* 3. UTILITIES GRID */
+.vp-utils-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 40px; animation: vpFadeUp 0.6s 0.1s both; }
+@media (min-width: 768px) { .vp-utils-grid { grid-template-columns: 1fr 1fr; } }
+.vp-util-card {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    padding: 24px; border-radius: 20px; display: flex; align-items: flex-start; gap: 16px;
+    box-shadow: var(--shadow-soft); transition: var(--transition);
+}
+.vp-util-card:hover { transform: translateY(-4px); border-color: rgba(251,191,36,0.3); }
+.vp-icon-gold { font-size: 24px; color: #fbbf24; padding: 12px; background: rgba(251,191,36,0.1); border-radius: 14px; }
+.vp-util-card h4 { font-size: 16px; font-weight: 800; color: var(--text-100); margin-bottom: 4px; }
+.vp-util-card p { font-size: 13px; color: var(--text-200); line-height: 1.5; }
+
+/* 4. BROADCAST FEED (Telegram Style) */
+.vp-feed-wrapper {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    border-radius: 24px; overflow: hidden; display: flex; flex-direction: column;
+    height: 600px; box-shadow: var(--shadow-float); animation: vpFadeUp 0.6s 0.2s both;
+}
+.vp-feed-header {
+    background: var(--bg-elevated); padding: 20px 24px; border-bottom: 1px solid var(--glass-border);
+    display: flex; justify-content: space-between; align-items: center; z-index: 10;
+}
+.vp-feed-header h3 { font-size: 16px; font-weight: 800; color: var(--text-100); display: flex; align-items: center; gap: 10px; }
+.vp-feed-header h3 i { color: #fbbf24; }
+.vp-feed-status { font-size: 11px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+.vp-feed-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); }
+
+.vp-feed-chat {
+    flex: 1; padding: 24px; overflow-y: auto; background: var(--bg-base);
+    display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth;
+}
+
+/* Chat Bubbles */
+.vp-bubble {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    padding: 16px 20px; border-radius: 20px; border-top-left-radius: 4px;
+    max-width: 85%; align-self: flex-start; box-shadow: var(--shadow-soft);
+    position: relative; animation: vpBubbleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.vp-bubble-title { font-weight: 800; font-size: 14px; color: #fbbf24; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.vp-bubble-time { font-size: 10px; color: var(--text-300); font-weight: 600; }
+.vp-bubble-text { font-size: 14px; color: var(--text-100); line-height: 1.6; white-space: pre-wrap; }
+
+/* Attachments */
+.vp-attach-img { margin-top: 12px; width: 100%; max-width: 400px; border-radius: 12px; border: 1px solid var(--glass-border); display: block; }
+.vp-attach-btn {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 12px;
+    background: var(--bg-elevated); color: var(--text-100); font-size: 13px; font-weight: 700;
+    padding: 10px 16px; border-radius: 12px; border: 1px solid var(--glass-border);
+    text-decoration: none; transition: 0.2s;
+}
+.vp-attach-btn:hover { background: var(--brand-main); color: #fff; border-color: var(--brand-main); }
+.vp-attach-btn i { color: var(--brand-main); }
+.vp-attach-btn:hover i { color: #fff; }
+
+/* 5. PRIORITY FAB */
+.vp-fab-support {
+    position: fixed; bottom: 100px; right: 24px; z-index: 9000;
+    width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer;
+    background: linear-gradient(135deg, #fbbf24, #d97706); color: #fff; font-size: 20px;
+    box-shadow: 0 12px 30px rgba(217,119,6,0.4); transition: var(--transition);
+    display: flex; align-items: center; justify-content: center;
+}
+.vp-fab-support:hover { transform: scale(1.1) rotate(-10deg); box-shadow: 0 16px 40px rgba(217,119,6,0.6); }
+
+/* 6. UTILITIES & ANIMATIONS */
+@keyframes vpFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes vpFadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes vpBubbleIn { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.vp-empty-feed { text-align: center; color: var(--text-300); margin: auto; padding: 40px; }
+.vp-empty-feed i { font-size: 42px; margin-bottom: 16px; opacity: 0.4; }
+.vp-empty-feed p { font-size: 14px; font-weight: 600; }
+
+.skeleton { position: relative; overflow: hidden; background: var(--bg-surface); border-color: transparent !important; }
+.skeleton::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: skelSweep 1.5s infinite; }
+[data-theme="light"] .skeleton::before { background: linear-gradient(90deg, transparent, rgba(0,0,0,0.03), transparent); }
+@keyframes skelSweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }

@@ -1,0 +1,125 @@
+/* ==========================================================================
+   NEXRA TECH PK — STOREFRONT CSS (css/storefront.css)
+   Scope: All .sf-* selectors
+   ========================================================================== */
+
+/* 1. LAYOUT & HERO PROFILE */
+.sf-container { padding: 90px 4% 100px; max-width: 1200px; margin: 0 auto; min-height: 100vh; overflow-x: hidden; }
+
+.sf-hero {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-soft);
+    margin-bottom: 30px; position: relative; animation: sfFadeIn 0.5s forwards;
+    min-height: 200px;
+}
+.sf-hero-bg {
+    height: 120px; background: linear-gradient(135deg, var(--brand-main), #8b5cf6);
+    position: relative;
+}
+.sf-hero-bg::after {
+    content: ''; position: absolute; inset: 0;
+    background: url('data:image/svg+xml;utf8,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><circle cx="2" cy="2" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+}
+
+.sf-hero-top { display: flex; justify-content: space-between; padding: 0 24px; position: relative; margin-top: -40px; }
+.sf-brand-avatar { position: relative; z-index: 10; }
+.sf-brand-avatar img {
+    width: 90px; height: 90px; border-radius: 20px; object-fit: cover;
+    border: 4px solid var(--bg-surface); background: var(--bg-base);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.sf-verified-badge {
+    position: absolute; bottom: 0; right: -5px; background: var(--bg-surface);
+    border-radius: 50%; padding: 2px; color: var(--brand-main); font-size: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.sf-hero-actions { margin-top: 50px; display: flex; gap: 10px; z-index: 10; }
+.sf-btn-icon {
+    width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--glass-border);
+    background: var(--bg-elevated); color: var(--text-200); display: flex;
+    align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
+}
+.sf-btn-icon:hover { background: var(--brand-main); color: #fff; border-color: var(--brand-main); transform: translateY(-2px); }
+
+.sf-hero-info { padding: 16px 24px 24px; }
+.sf-store-name { font-size: 24px; font-weight: 900; color: var(--text-100); margin-bottom: 4px; }
+.sf-store-desc { font-size: 14px; color: var(--text-300); margin-bottom: 16px; }
+
+.sf-trust-stats { display: flex; flex-wrap: wrap; gap: 16px; }
+.sf-stat {
+    display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700;
+    color: var(--text-200); background: var(--bg-elevated); padding: 6px 12px;
+    border-radius: 8px; border: 1px solid var(--glass-border);
+}
+.sf-stat i { color: #fbbf24; }
+
+/* 2. TOOLBAR & SEARCH */
+.sf-toolbar { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+.sf-search-wrap {
+    position: relative; width: 100%; max-width: 400px;
+}
+.sf-search-wrap i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-300); }
+.sf-search-wrap input {
+    width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px;
+    border: 1px solid var(--glass-border); background: var(--bg-surface);
+    color: var(--text-100); font-family: inherit; font-size: 14px; transition: 0.3s;
+}
+.sf-search-wrap input:focus { outline: none; border-color: var(--brand-main); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
+
+/* 3. INVENTORY GRID */
+.sf-inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+
+.sf-prod-card {
+    background: var(--bg-surface); border: 1px solid var(--glass-border);
+    border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: var(--shadow-soft); transition: 0.4s var(--ease);
+    animation: sfFadeIn 0.5s backwards;
+}
+.sf-prod-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-float); border-color: var(--brand-main); }
+
+.sf-prod-img { width: 100%; height: 160px; object-fit: cover; border-bottom: 1px solid var(--glass-border); }
+.sf-prod-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+.sf-prod-title { font-size: 15px; font-weight: 800; color: var(--text-100); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sf-prod-price { font-size: 18px; font-weight: 900; color: var(--brand-main); margin-bottom: 16px; margin-top: auto; }
+
+.sf-prod-actions { display: flex; gap: 8px; }
+.sf-btn { flex: 1; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 800; border: none; cursor: pointer; transition: 0.3s; text-align: center; }
+.sf-btn-cart { background: var(--bg-elevated); color: var(--text-200); border: 1px solid var(--glass-border); }
+.sf-btn-cart:hover { background: var(--text-200); color: var(--bg-base); }
+.sf-btn-buy { background: linear-gradient(135deg, var(--brand-main), #8b5cf6); color: #fff; box-shadow: 0 4px 12px var(--brand-glow); }
+.sf-btn-buy:hover { transform: translateY(-2px); box-shadow: 0 8px 16px var(--brand-glow); }
+
+/* 4. ERROR & EMPTY STATES */
+.sf-error-state { text-align: center; padding: 60px 20px; background: var(--bg-surface); border-radius: 24px; border: 1px dashed var(--glass-border); }
+.sf-error-state i { font-size: 64px; color: var(--text-300); margin-bottom: 16px; }
+.sf-error-state h2 { font-size: 24px; font-weight: 800; color: var(--text-100); margin-bottom: 8px; }
+.sf-error-state p { color: var(--text-200); font-size: 15px; }
+
+.sf-btn-outline {
+    display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;
+    border-radius: 12px; border: 1px solid var(--brand-main); color: var(--brand-main);
+    font-weight: 700; text-decoration: none; transition: 0.3s;
+}
+.sf-btn-outline:hover { background: rgba(139, 92, 246, 0.1); }
+
+/* 5. FLOATING WHATSAPP BUTTON */
+.sf-fab-whatsapp {
+    position: fixed; bottom: 80px; right: 20px; background: #25D366; color: #fff;
+    padding: 12px 20px; border-radius: 50px; display: flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 800; box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+    z-index: 9000; text-decoration: none; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: sfSlideUp 0.5s backwards; animation-delay: 0.5s;
+}
+@media (min-width: 768px) { .sf-fab-whatsapp { bottom: 40px; right: 40px; padding: 14px 24px; font-size: 16px; } }
+.sf-fab-whatsapp:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5); }
+.sf-fab-whatsapp i { font-size: 20px; }
+
+/* 6. ANIMATIONS & SKELETONS */
+@keyframes sfFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes sfSlideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+.skeleton { position: relative; overflow: hidden; background: var(--bg-surface); border-color: transparent !important; pointer-events: none; }
+.skeleton::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: skelSweep 1.5s infinite; }
+[data-theme="light"] .skeleton::before { background: linear-gradient(90deg, transparent, rgba(0,0,0,0.03), transparent); }
+@keyframes skelSweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
